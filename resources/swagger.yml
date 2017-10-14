@@ -2,33 +2,67 @@ swagger: '2.0'
 
 # This is your document metadata
 info:
-  version: "0.0.0"
-  title: API текстового квеста
+  version: "0.1.0"
+  title: API сервера знакомств
 
 # Describe your paths here
 paths:
-  /player/register:
+  /api/v1/auth/register:
     post:
-      summary: |
+      summary:
         Регистрация пользователя
       parameters:
-        - name: registration
+        - name: user
           in: body
           description: Информация о пользователе
           required: true
           schema:
             $ref: '#/definitions/User'
       responses:
-        201:
-          description: |
-            Пользователь успешно зарегистрирован.
+        200:
+          description:
+            пользователь успешно зарегистрирован.
+          schema:
+            type: object
+            description: ответ с токеном авторизации
+            example:
+              {
+                data: token_of_the_user
+              }
+        400:
+          description:
+            ошибка в запросе
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: плохой запрос
+              }
         409:
-          description: |
-            Пользователь уже присутствует в базе данных
+          description:
+            пользователь уже присутствует в базе данных
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: конфликт
+              }
+        500:
+          description:
+            ошибка на сервере
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: сервер упал
+              }
 
-  /player/login:
+  /api/v1/auth/login:
     post:
-      summary: |
+      summary:
         Логин пользователя
       parameters:
         - name: login
@@ -39,152 +73,386 @@ paths:
             $ref: '#/definitions/User'
       responses:
         200:
-          description: |
-            Пользователь успешно залогинен.
+          description:
+            пользователь успешно зарегистрирован.
+          schema:
+            type: object
+            description: ответ с токеном авторизации
+            example:
+              {
+                data: token_of_the_user
+              }
+        400:
+          description:
+            ошибка в запросе
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: плохой запрос
+              }
         404:
-          description: |
-            Пользователь не найден в базе
+          description:
+            пользователь не найден в базе
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: пользователь не найден
+              }
+        500:
+          description:
+            ошибка на сервере
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: сервер упал
+              }
 
-  /game/start:
+  /api/v1/user/position/save:
     post:
-      summary: |
-        Начать игру
-        - name: login
+      summary:
+        Сохранить гео-метку
+      parameters:
+        - name: position
           in: body
-          description: Информация о пользователе
+          description: положение пользователя в текущий момент
           required: true
           schema:
-            $ref: '#/definitions/Labirinth'
+            $ref: '#/definitions/Position'
+        - name: Authorization
+          in: header
+          description: авторизационный токен
+          required: true
+          type: string
       responses:
         200:
-          description: |
-            Игра началась.
-        404:
-          description: |
-            Лабиринта с таким айди не существует
-
-  /game/end:
-    get:
-      summary: |
-        Прервать игру
-      responses:
-        200:
-          description: |
-            Информация о комнате успешно получена
-
-  /game/look_around:
-    get:
-      summary: |
-        Получить информацию о комнате, в которой находится игрок
-      responses:
-        200:
-          description: |
-            Информация о комнате успешно получена
+          description:
+            пользователь успешно зарегистрирован
           schema:
-            $ref: '#/definitions/Room'
-        403:
-          description: |
-            Пользователь не залогинен или не находится в игре
-
-  /game/look_around/bag:
-    get:
-      summary: |
-        Получить список предметов в сумке
-      responses:
-        200:
-          description: |
-            Информация о сумке успешно получена
-          schema:
-            $ref: '#/definitions/Items'
-        403:
-          description: |
-            Пользователь не залогинен или не находится в игре
-
-
-  /game/look_around/entities/items:
-    get:
-      summary: |
-        Получить список доступных предметов в комнате, в которой находится игрок
-      responses:
-        200:
-          description: |
-            Список доступных предметов успешно получен.
-            В ответе возвращается список доступных предметов в комнате.
-          schema:
-            $ref: '#/definitions/Items'
-        403:
-          description: |
-            Пользователь не залогинен или не находится в игре
-
-  /game/look_around/entities/slots:
-    get:
-      summary: |
-        Получить список доступных слотов в комнате, в которой находится игрок
-      responses:
-        200:
-          description: |
-            Список доступных слотов успешно получен.
-            В ответе возвращается список слотов в комнате.
-          schema:
-            $ref: '#/definitions/Slots'
-        403:
-          description: |
-            Пользователь не залогинен или не находится в игре
-
-  /game/look_around/entities/interactives:
-    get:
-      summary: |
-        Получить список доступных интерактивных объектов в комнате, в которой находится игрок
-      responses:
-        200:
-          description: |
-            Список доступных интерактивных объектов успешно получен.
-            В ответе возвращается список интерактивных объектов в комнате.
-          schema:
-            $ref: '#/definitions/Interactives'
-        403:
-          description: |
-            Пользователь не залогинен или не находится в игре
-
-  /game/look_around/entities/doors:
-    get:
-      summary: |
-        Получить список дверей в комнате, в которой находится игрок
-      responses:
-        200:
-          description: |
-            Список дверей успешно получен.
-            В ответе возвращается список дверей в комнате.
-          schema:
-            $ref: '#/definitions/Doors'
-        403:
-          description: |
-            Пользователь не залогинен или не находится в игре
-
-  /game/command:
-    post:
-      summary: |
-        Послать команду по управлению игроком
-      parameters:
-      - name: command
-        in: body
-        description: Команда, которую нужно исполнить игроку
-        required: true
-        schema:
-          $ref: '#/definitions/Command'
-      responses:
-        200:
-          description: |
-            Команда успешно исполнена
-          schema:
-            $ref: '#/definitions/CommandResult'
+            type: object
+            description: ответ с ошибкой
+            example:
+              {}
         400:
-          description: |
-            Плохо сформированная команда
-        403:
-          description: |
-            Пользователь не залогинен или не находится в игре
+          description:
+            ошибка в запросе
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: плохой запрос
+              }
+        401:
+          description:
+            пользователь не авторизован
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: авторизуйся
+              }
+        500:
+          description:
+            ошибка на сервере
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: сервер упал
+              }
 
+  /api/v1/user/position/get_neighbours:
+    get:
+      summary:
+        Получить гео-метки ближайших пользователей
+      parameters:
+        - name: Authorization
+          in: header
+          description: авторизационный токен
+          required: true
+          type: string
+      responses:
+        200:
+          description:
+            данные успешно получены
+          schema:
+            type: array
+            description: гео-метки ближайших пользователей
+            items:
+              $ref: '#/definitions/Position'
+        400:
+          description:
+            проблема с авторизационным токеном
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: плохой запрос
+              }
+        401:
+          description:
+            пользователь не авторизован
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: авторизуйся
+              }
+        500:
+          description:
+            ошибка на сервере
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: сервер упал
+              }
+
+  /api/v1/user/request/create:
+    post:
+      summary:
+        Сделать запрос на встречу в реальном мире
+      parameters:
+        - name: request
+          in: body
+          description: Запрос на встречу
+          required: true
+          schema:
+            $ref: '#/definitions/MeetRequest'
+        - name: Authorization
+          in: header
+          description: авторизационный токен
+          required: true
+          type: string
+      responses:
+        200:
+          description:
+            запрос успешно создан
+          schema:
+            type: object
+            example:
+              {}
+        400:
+          description:
+            плохой запрос
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: плохой запрос
+              }
+        401:
+          description:
+            пользователь не авторизован
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: авторизуйся
+              }
+        403:
+          description:
+            попытка создания запроса к недоступному пользователю
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: адресант не найден
+              }
+        500:
+          description:
+            Ошибка на сервере
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: сервер упал
+              }
+
+  /api/v1/user/request/get_all:
+      get:
+        summary:
+          Получить все запросы непротухшие запросы
+        parameters:
+          - name: Authorization
+            in: header
+            description: авторизационный токен
+            required: true
+            type: string
+        responses:
+          200:
+            description:
+              запросы успешно получены
+            schema:
+              type: array
+              items:
+                $ref: '#/definitions/MeetRequest'
+          400:
+            description:
+              плохой запрос
+            schema:
+              type: object
+              description: ответ с ошибкой
+              example:
+                {
+                  err_msg: плохой запрос
+                }
+          401:
+            description:
+              пользователь не авторизован
+            schema:
+              type: object
+              description: ответ с ошибкой
+              example:
+                {
+                  err_msg: авторизуйся
+                }
+          500:
+            description:
+              Ошибка на сервере
+            schema:
+              type: object
+              description: ответ с ошибкой
+              example:
+                {
+                  err_msg: сервер упал
+                }
+
+  /api/v1/user/request/update:
+    post:
+      summary:
+        Обновить состояние запроса
+      parameters:
+        - name: Authorization
+          in: header
+          description: авторизационный токен
+          required: true
+          type: string
+      responses:
+        200:
+          description:
+            запрос успешно обновлен
+          schema:
+            type: object
+            example:
+              {
+                data: количество обновленных запросов
+              }
+        400:
+          description:
+            плохой запрос
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: плохой запрос
+              }
+        401:
+          description:
+            пользователь не авторизован
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: авторизуйся
+              }
+        404:
+          description:
+            обновляемый запрос не найден
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: запрос не найден
+              }
+        451:
+          description:
+            пользователь не может принять ответ, так как уже принял предложение кого-то другого
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: пользователь занят
+              }
+        500:
+          description:
+            Ошибка на сервере
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: сервер упал
+              }
+
+  /api/v1/user/request/get_new:
+    get:
+      summary:
+        Получить новые запросы от других пользователей,
+        а также обновления собственных запросов (используется в режиме поллинга)
+      parameters:
+        - name: Authorization
+          in: header
+          description: авторизационный токен
+          required: true
+          type: string
+      responses:
+        200:
+          description:
+            данные успешно получены
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/MeetRequest'
+        400:
+          description:
+            плохой запрос
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: плохой запрос
+              }
+        401:
+          description:
+            пользователь не авторизован
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: авторизуйся
+              }
+        500:
+          description:
+            Ошибка на сервере
+          schema:
+            type: object
+            description: ответ с ошибкой
+            example:
+              {
+                err_msg: сервер упал
+              }
 
 definitions:
   User:
@@ -193,183 +461,102 @@ definitions:
       login:
         type: string
         description: Логин пользователя
-        example: Some
+        example: Petya
       password:
         type: string
         description: Пароль пользователя
         example: some78pass
+      age:
+        type: integer
+        description: Возраст пользователя
+        example: 15
+      sex:
+        type: string
+        description: Пол пользователя (M или F)
+        example: M
+      about:
+        type: string
+        description: Все, что пользователь хочет сообщить о себе
+        example: Мне нечего сказать о себе
     required:
     - login
     - password
 
-
-  Labirith:
+  Position:
+    description: гео-отметка пользователя
     type: object
     properties:
       id:
-        type: int
-        description: Айди лабиринта
-        example: 1
-    required:
-    - id
-
-  Room:
-    type: object
-    properties:
-      name:
+        type: integer
+        description: id гео-отметки
+        example: 1234
+      user_id:
+        type: integer
+        description: id пользователя, которому принадлежит гео-отметка
+        example: 1234
+      point:
+        type: object
+        $ref: '#/definitions/Point'
+      time:
         type: string
-        description: Название комнаты
-        example: Страшная черная комната
-      description:
-        type: string
-        description: Описание комнаты
-        example: Черная в комната, в которой темно и никого нет
+        description: время отметки в формате "YYYY-MM-DDTHH:MM:SS"
+        example: 2006-01-02T15:04:05
     required:
-    - name
-    - description
+      - point
 
-  Item:
+  MeetRequest:
+    description: запрос на встречу
     type: object
     properties:
       id:
-        type: number
-        description: Индентификатор предмета
-        example: 1
-      name:
+        type: integer
+        description: id запроса
+        example: 1234
+      requester_id:
         type: string
-        description: Название предмета
-        example: Большой золотой ключ
-      description:
+        description: id пользователя, пославшего запрос
+        example: 123
+      requested_id:
         type: string
-        description: Описание предмета
-        example: На ключе имеются странные бороздки и выемки
-      size:
-        type: number
-        description: Размер предмета
-        example: 100
+        description: id пользователя, которому запрос послан
+        example: 321
+      time:
+        type: string
+        description: время отметки в формате "YYYY-MM-DDTHH:MM:SS"
+        example: 2006-01-02T15:04:05
+      status:
+        type: string
+        description: статус запроса PENDING | ACCEPTED | DECLINED
+        example: PENDING
     required:
-    - name
-    - description
-    - size
-    - id
+      - requester_id
+      - requested_id
 
-  Items:
-    type: array
-    items:
-      $ref: '#/definitions/Item'
-
-  Slot:
-    type: object
-    properties:
-      name:
-        type: string
-        description: Имя слота
-        example: Большая вместительная коробка
-      capacity:
-        type: number
-        description: Максимальная вместительность слота
-        example: 100
-      contains:
-        type: number
-        description: Занятое место в слоте
-        example: 50
-    required:
-    - name
-    - capacity
-    - contains
-
-  Slots:
-    type: array
-    items:
-      $ref: '#/definitions/Slot'
-
-  Interactive:
+  RequestUpdate:
+    description: обновление состояния запроса
     type: object
     properties:
       id:
-        type: number
-        description: Уникальный индентификатор интерактивного объекта
-        example: 1
-      name:
+        type: integer
+        description: id запроса, который требуется обновить
+        example: 1234
+      status:
         type: string
-        description: Имя интерактивного объекта
-        example: Заржавленный переключатель
-      description:
-        type: string
-        description: Описание интерактивного объета
-        example: Вероятно, открывает одну из дверей в этой комнате
+        description: новый статус запроса ACCEPTED | DECLINED
+        example: ACCEPTED
     required:
-    - id
-    - name
-    - description
+      - id
+      - status
 
-  Interactives:
-    type: array
-    items:
-      $ref: '#/definitions/Interactive'
-
-  Door:
+  Point:
+    description: точка на карте
     type: object
     properties:
-      id:
+      x:
         type: number
-        description: Id двери
-        example: 1
-      name:
-        type: string
-        description: Название двери
-    required:
-    - id
-    - name
-
-  Doors:
-    type: array
-    items:
-      $ref: '#/definitions/Door'
-
-  Command:
-    type: object
-    properties:
-      code:
+        description: Широта
+        example: 11.829
+      y:
         type: number
-        description: Код команды
-        example: 1
-      itemKey:
-        type: string
-        description: |
-          Идентификатор объекта (предмета, слота, интерактивного объекта
-          или двери), к которым применяется команда
-        example: Восточная дверь
-      args:
-        type: array
-        items:
-          type: string
-        description: |
-          Набор дополнительных аргументов для выполнения команды.
-          Например, пароль от сейфа.
-        example: 12345
-      items:
-        type: array
-        items:
-          type: number
-        description: |
-          Идентификаторы предметов в сумке, которые будут использованы при
-          выполнении команды
-        example: [1, 2, 3, 4, 5]
-    required:
-    - code
-
-
-
-  CommandResult:
-    type: object
-    properties:
-      msg:
-        type: string
-        description: Сообщение о результате успешного исполнения команды
-        example: Дверь 1 открыта
-      errMsg:
-        type: string
-        description: Сообщение о неуспешном исполнении команды
-        example: Некуда положить большой красивый меч
-
+        description: Долгота
+        example: 928.11
