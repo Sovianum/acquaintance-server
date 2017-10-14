@@ -169,7 +169,7 @@ paths:
                 err_msg: сервер упал
               }
 
-  /api/v1/user/position/get_neighbours:
+  /api/v1/user/position/neighbours:
     get:
       summary:
         Получить гео-метки ближайших пользователей
@@ -284,7 +284,7 @@ paths:
                 err_msg: сервер упал
               }
 
-  /api/v1/user/request/get_all:
+  /api/v1/user/request/all:
       get:
         summary:
           Получить все запросы непротухшие запросы
@@ -404,7 +404,7 @@ paths:
                 err_msg: сервер упал
               }
 
-  /api/v1/user/request/get_new:
+  /api/v1/user/request/new:
     get:
       summary:
         Получить новые запросы от других пользователей,
