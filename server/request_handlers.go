@@ -129,7 +129,7 @@ func (env *Env) UpdateRequest(w http.ResponseWriter, r *http.Request) {
 	w.Write(common.GetEmptyJson())
 }
 
-func (env *Env) GetNewRequests(w http.ResponseWriter, r *http.Request) {
+func (env *Env) GetNewRequestsEvents(w http.ResponseWriter, r *http.Request) {
 	var userId, tokenCode, tokenErr = env.getIdFromRequest(r)
 	if tokenErr != nil {
 		w.WriteHeader(tokenCode)

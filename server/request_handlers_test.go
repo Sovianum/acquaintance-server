@@ -448,7 +448,7 @@ func TestEnv_GetNewRequests_Success(t *testing.T) {
 	var rec, recErr = getRecorder(
 		urlSample,
 		http.MethodGet,
-		env.GetNewRequests,
+		env.GetNewRequestsEvents,
 		strings.NewReader(""),
 		headerPair{"Content-Type", "application/json"},
 		headerPair{authorizationStr, fmt.Sprintf("Bearer %s", tokenStr)},
@@ -478,7 +478,7 @@ func TestEnv_GetNewRequests_NoIdInToken(t *testing.T) {
 	var rec, recErr = getRecorder(
 		urlSample,
 		http.MethodGet,
-		env.GetNewRequests,
+		env.GetNewRequestsEvents,
 		strings.NewReader(""),
 		headerPair{"Content-Type", "application/json"},
 		headerPair{authorizationStr, fmt.Sprintf("Bearer %s", tokenStr)},
@@ -499,7 +499,7 @@ func TestEnv_GetNewRequests_BadToken(t *testing.T) {
 	var rec, recErr = getRecorder(
 		urlSample,
 		http.MethodGet,
-		env.GetNewRequests,
+		env.GetNewRequestsEvents,
 		strings.NewReader(""),
 		headerPair{"Content-Type", "application/json"},
 		headerPair{authorizationStr, fmt.Sprintf("Bearer %s", tokenStr)},
@@ -520,7 +520,7 @@ func TestEnv_GetNewRequests_Empty(t *testing.T) {
 	var rec, recErr = getRecorder(
 		urlSample,
 		http.MethodGet,
-		env.GetNewRequests,
+		env.GetNewRequestsEvents,
 		strings.NewReader(""),
 		headerPair{"Content-Type", "application/json"},
 		headerPair{authorizationStr, fmt.Sprintf("Bearer %s", tokenStr)},

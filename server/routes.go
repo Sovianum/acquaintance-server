@@ -14,7 +14,7 @@ func GetRouter(env *Env) *mux.Router {
 	router.HandleFunc("/api/v1/comm/create_request/", env.CreateRequest).Methods(http.MethodPost)
 	router.HandleFunc("/api/v1/comm/get_requests/", env.GetRequests).Methods(http.MethodGet)
 	router.HandleFunc("/api/v1/comm/update_request/", env.UpdateRequest).Methods(http.MethodPost)
-	router.HandleFunc("/api/v1/comm/get_new_requests/", env.GetNewRequests).Methods(http.MethodGet)
+	router.HandleFunc("/api/v1/comm/get_new_requests/", env.GetNewRequestsEvents).Methods(http.MethodGet)
 
 	return router
 }
