@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"github.com/gorilla/handlers"
 	"fmt"
+	"strconv"
 )
 
 const (
@@ -24,7 +25,20 @@ func main() {
 
 	var env = server.NewEnv(db, conf)
 	var router = server.GetRouter(env)
-	http.ListenAndServe(":3000", handlers.LoggingHandler(os.Stdout, router))
+
+	var portLine = fmt.Sprintf(":%d", getServerPort(conf))
+	http.ListenAndServe(portLine, handlers.LoggingHandler(os.Stdout, router))
+}
+
+func getServerPort(conf config.Conf) int {
+	var portStr = os.Getenv(conf.PortEnvVar)
+
+	if port, err := strconv.Atoi(portStr); err == nil {
+		fmt.Println("Used system port")
+		return port
+	}
+	fmt.Println("Used default port")
+	return conf.DefaultPort
 }
 
 func connectDB(conf config.Conf) (*sql.DB, error) {

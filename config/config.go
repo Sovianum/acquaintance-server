@@ -15,9 +15,11 @@ func ReadConf(r io.Reader) (Conf, error) {
 }
 
 type Conf struct {
-	Auth  AuthConfig  `json:"auth"`
-	DB    DBConfig    `json:"db"`
-	Logic LogicConfig `json:"logic"`
+	PortEnvVar  string      `json:"port_env_var"`
+	DefaultPort int         `json:"default_port"`
+	Auth        AuthConfig  `json:"auth"`
+	DB          DBConfig    `json:"db"`
+	Logic       LogicConfig `json:"logic"`
 }
 
 type AuthConfig struct {

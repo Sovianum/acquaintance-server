@@ -1,4 +1,6 @@
 {
+  "port_env_var": "PORT",
+  "default_port": 3000,
   "auth": {
     "token_key": "token90",
     "expire_days": 100
