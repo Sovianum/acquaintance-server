@@ -6,6 +6,7 @@
   "db": {
     "port": 8080,
     "driver_name": "postgres",
+    "env_var": "DATABASE_URL",
     "user": "go_user",
     "password": "go",
     "db_name": "acq",
