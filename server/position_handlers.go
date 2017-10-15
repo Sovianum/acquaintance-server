@@ -17,8 +17,10 @@ const (
 )
 
 func (env *Env) UserGetNeighboursGet(w http.ResponseWriter, r *http.Request) {
+	env.logger.LogRequestStart(r)
 	var userId, idCode, idErr = env.getIdFromRequest(r)
 	if idErr != nil {
+		env.logger.LogRequestError(r, idErr)
 		w.WriteHeader(idCode)
 		w.Write(common.GetErrorJson(idErr))
 		return
@@ -26,17 +28,21 @@ func (env *Env) UserGetNeighboursGet(w http.ResponseWriter, r *http.Request) {
 
 	var neighbours, nErr = env.userDAO.GetNeighbourUsers(userId, env.conf.Logic.Distance, env.conf.Logic.OnlineTimeout)
 	if nErr != nil {
+		env.logger.LogRequestError(r, nErr)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(common.GetErrorJson(nErr))
 		return
 	}
 
+	env.logger.LogRequestSuccess(r)
 	w.Write(common.GetDataJson(neighbours))
 }
 
 func (env *Env) UserSavePositionPost(w http.ResponseWriter, r *http.Request) {
+	env.logger.LogRequestStart(r)
 	var userId, idCode, idErr = env.getIdFromRequest(r)
 	if idErr != nil {
+		env.logger.LogRequestError(r, idErr)
 		w.WriteHeader(idCode)
 		w.Write(common.GetErrorJson(idErr))
 		return
@@ -44,6 +50,7 @@ func (env *Env) UserSavePositionPost(w http.ResponseWriter, r *http.Request) {
 
 	var position, code, parseErr = parsePosition(r)
 	if parseErr != nil {
+		env.logger.LogRequestError(r, parseErr)
 		w.WriteHeader(code)
 		w.Write(common.GetErrorJson(parseErr))
 		return
@@ -52,11 +59,13 @@ func (env *Env) UserSavePositionPost(w http.ResponseWriter, r *http.Request) {
 
 	var saveErr = env.positionDAO.Save(position)
 	if saveErr != nil {
+		env.logger.LogRequestError(r, saveErr)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(common.GetErrorJson(saveErr))
 		return
 	}
 
+	env.logger.LogRequestSuccess(r)
 	w.Write(common.GetEmptyJson())
 }
 

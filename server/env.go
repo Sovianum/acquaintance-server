@@ -1,26 +1,27 @@
 package server
 
 import (
+	"crypto/sha256"
+	"database/sql"
+	"fmt"
 	"github.com/Sovianum/acquaintance-server/config"
 	"github.com/Sovianum/acquaintance-server/dao"
+	"github.com/Sovianum/acquaintance-server/mylog"
 	"github.com/patrickmn/go-cache"
-	"database/sql"
 	"time"
-	"crypto/sha256"
-	"fmt"
 )
 
 type tokenKeyGetterType func() string
 
-func NewEnv(db *sql.DB, conf config.Conf) *Env {
+func NewEnv(db *sql.DB, conf config.Conf, logger *mylog.Logger) *Env {
 	var env = &Env{
-		userDAO:dao.NewDBUserDAO(db),
-		positionDAO:dao.NewDBPositionDAO(db),
-		meetRequestDAO:dao.NewMeetDAO(db),
-		conf:conf,
-		meetRequestCache:cache.New(
-			time.Second * time.Duration(conf.Logic.RequestExpiration),
-			time.Second * time.Duration(conf.Logic.CleanupInterval),
+		userDAO:        dao.NewDBUserDAO(db),
+		positionDAO:    dao.NewDBPositionDAO(db),
+		meetRequestDAO: dao.NewMeetDAO(db),
+		conf:           conf,
+		meetRequestCache: cache.New(
+			time.Second*time.Duration(conf.Logic.RequestExpiration),
+			time.Second*time.Duration(conf.Logic.CleanupInterval),
 		),
 		hashFunc: func(password []byte) ([]byte, error) {
 			var h = sha256.New()
@@ -37,6 +38,7 @@ func NewEnv(db *sql.DB, conf config.Conf) *Env {
 			}
 			return nil
 		},
+		logger: logger,
 	}
 
 	env.RunDaemons()
@@ -51,4 +53,5 @@ type Env struct {
 	hashFunc         func(password []byte) ([]byte, error)
 	hashValidator    func(password []byte, hash []byte) error
 	meetRequestCache *cache.Cache
+	logger           *mylog.Logger
 }

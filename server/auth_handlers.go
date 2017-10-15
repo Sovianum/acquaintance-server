@@ -18,8 +18,10 @@ const (
 )
 
 func (env *Env) UserRegisterPost(w http.ResponseWriter, r *http.Request) {
+	env.logger.LogRequestStart(r)
 	var user, code, parseErr = parseUser(r)
 	if parseErr != nil {
+		env.logger.LogRequestError(r, parseErr)
 		w.WriteHeader(code)
 		w.Write(common.GetErrorJson(parseErr))
 		return
@@ -27,18 +29,22 @@ func (env *Env) UserRegisterPost(w http.ResponseWriter, r *http.Request) {
 
 	var exists, existsErr = env.userDAO.ExistsByLogin(user.Login)
 	if existsErr != nil {
+		env.logger.LogRequestError(r, existsErr)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(common.GetErrorJson(existsErr))
 		return
 	}
 	if exists {
+		var err = errors.New("user already exists")
+		env.logger.LogRequestError(r, err)
 		w.WriteHeader(http.StatusConflict)
-		w.Write(common.GetErrorJson(errors.New("user already exists")))
+		w.Write(common.GetErrorJson(err))
 		return
 	}
 
 	var hash, err = env.hashFunc([]byte(user.Password))
 	if err != nil {
+		env.logger.LogRequestError(r, err)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(common.GetErrorJson(err))
 		return
@@ -47,6 +53,7 @@ func (env *Env) UserRegisterPost(w http.ResponseWriter, r *http.Request) {
 
 	var userId, saveErr = env.userDAO.Save(user)
 	if saveErr != nil {
+		env.logger.LogRequestError(r, saveErr)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(common.GetErrorJson(saveErr))
 		return
@@ -54,18 +61,22 @@ func (env *Env) UserRegisterPost(w http.ResponseWriter, r *http.Request) {
 
 	var tokenString, tokenErr = env.generateTokenString(userId, user.Login)
 	if tokenErr != nil {
+		env.logger.LogRequestError(r, tokenErr)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(common.GetErrorJson(tokenErr))
 		// TODO add info that user has been successfully saved
 		return
 	}
 
+	env.logger.LogRequestSuccess(r)
 	w.Write(common.GetDataJson(tokenString))
 }
 
 func (env *Env) UserSignInPost(w http.ResponseWriter, r *http.Request) {
+	env.logger.LogRequestStart(r)
 	var user, code, parseErr = parseUser(r)
 	if parseErr != nil {
+		env.logger.LogRequestError(r, parseErr)
 		w.WriteHeader(code)
 		w.Write(common.GetErrorJson(parseErr))
 		return
@@ -73,13 +84,16 @@ func (env *Env) UserSignInPost(w http.ResponseWriter, r *http.Request) {
 
 	var exists, existsErr = env.userDAO.ExistsByLogin(user.Login)
 	if existsErr != nil {
+		env.logger.LogRequestError(r, existsErr)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(common.GetErrorJson(existsErr))
 		return
 	}
 	if !exists {
+		var err = errors.New("not found")
+		env.logger.LogRequestError(r, err)
 		w.WriteHeader(http.StatusNotFound)
-		w.Write(common.GetErrorJson(errors.New("not found")))
+		w.Write(common.GetErrorJson(err))
 		return
 	}
 
@@ -91,6 +105,7 @@ func (env *Env) UserSignInPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := env.hashValidator([]byte(user.Password), []byte(dbUser.Password)); err != nil {
+		env.logger.LogRequestError(r, err)
 		w.WriteHeader(http.StatusNotFound)
 		w.Write(common.GetErrorJson(err))
 		return
@@ -98,12 +113,14 @@ func (env *Env) UserSignInPost(w http.ResponseWriter, r *http.Request) {
 
 	var tokenString, tokenErr = env.generateTokenString(dbUser.Id, dbUser.Login)
 	if tokenErr != nil {
+		env.logger.LogRequestError(r, tokenErr)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(common.GetErrorJson(tokenErr))
 		// TODO add info that user has been successfully saved
 		return
 	}
 
+	env.logger.LogRequestSuccess(r)
 	w.Write(common.GetDataJson(tokenString))
 }
 

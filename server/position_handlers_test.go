@@ -13,6 +13,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"io/ioutil"
+	"github.com/Sovianum/acquaintance-server/mylog"
 )
 
 const (
@@ -150,6 +152,7 @@ func TestEnv_UserSavePositionPost_Success(t *testing.T) {
 	var env = &Env{
 		positionDAO: dao.NewDBPositionDAO(db),
 		conf:    getAuthConf(),
+		logger: mylog.NewLogger(ioutil.Discard),
 	}
 
 	var requestMsg, jsonErr = json.Marshal(pos)
@@ -172,6 +175,7 @@ func TestEnv_UserSavePositionPost_Success(t *testing.T) {
 func TestEnv_UserSavePositionPost_BadFormat(t *testing.T) {
 	var env = &Env{
 		conf: getAuthConf(),
+		logger: mylog.NewLogger(ioutil.Discard),
 	}
 
 	var requestMsg = "invalid json"
@@ -200,6 +204,7 @@ func TestEnv_UserSavePositionPost_Unauthorized(t *testing.T) {
 
 	var env = &Env{
 		conf: getAuthConf(),
+		logger: mylog.NewLogger(ioutil.Discard),
 	}
 
 	var requestMsg, jsonErr = json.Marshal(pos)
@@ -227,6 +232,7 @@ func TestEnv_UserSavePositionPost_BadToken(t *testing.T) {
 
 	var env = &Env{
 		conf: getAuthConf(),
+		logger: mylog.NewLogger(ioutil.Discard),
 	}
 
 	var requestMsg, jsonErr = json.Marshal(pos)
@@ -269,6 +275,7 @@ func TestEnv_UserSavePositionPost_SaveErr(t *testing.T) {
 	var env = &Env{
 		positionDAO: dao.NewDBPositionDAO(db),
 		conf:    getAuthConf(),
+		logger: mylog.NewLogger(ioutil.Discard),
 	}
 
 	var requestMsg, jsonErr = json.Marshal(pos)

@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/handlers"
 	"fmt"
 	"strconv"
+	"github.com/Sovianum/acquaintance-server/mylog"
 )
 
 const (
@@ -22,8 +23,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	var logger = mylog.NewLogger(os.Stdout)
 
-	var env = server.NewEnv(db, conf)
+	var env = server.NewEnv(db, conf, logger)
 	var router = server.GetRouter(env)
 
 	var portLine = fmt.Sprintf(":%d", getServerPort(conf))

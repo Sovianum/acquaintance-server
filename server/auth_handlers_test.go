@@ -16,6 +16,8 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"database/sql"
+	"github.com/Sovianum/acquaintance-server/mylog"
+	"io/ioutil"
 )
 
 const (
@@ -85,6 +87,7 @@ func TestEnv_UserRegisterPost_ParseFail(t *testing.T) {
 
 	var env = &Env{
 		conf: getAuthConf(),
+		logger: mylog.NewLogger(ioutil.Discard),
 	}
 
 	var rec, recErr = getRecorder(
@@ -293,6 +296,7 @@ func TestEnv_UserRegisterPost_NoLogin(t *testing.T) {
 
 	var env = &Env{
 		conf: getAuthConf(),
+		logger:mylog.NewLogger(ioutil.Discard),
 	}
 
 	var requestMsg, jsonErr = json.Marshal(user)
@@ -320,6 +324,7 @@ func TestEnv_UserRegisterPost_NoPassword(t *testing.T) {
 
 	var env = &Env{
 		conf: getAuthConf(),
+		logger: mylog.NewLogger(ioutil.Discard),
 	}
 
 	var requestMsg, jsonErr = json.Marshal(user)
@@ -439,6 +444,7 @@ func TestEnv_UserSignInPost_WrongPassword(t *testing.T) {
 func TestEnv_UserSignInPost_ParseError(t *testing.T) {
 	var env = &Env{
 		conf: getAuthConf(),
+		logger: mylog.NewLogger(ioutil.Discard),
 	}
 
 	var rec, recErr = getRecorder(
@@ -632,5 +638,6 @@ func getEnv(db *sql.DB) *Env {
 			}
 			return nil
 		},
+		logger: mylog.NewLogger(ioutil.Discard),
 	}
 }
