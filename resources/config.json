@@ -15,10 +15,10 @@
     "auth_string_template": "user=%s password=%s dbname=%s sslmode=disable"
   },
   "logic": {
-    "distance": 100,
-    "online_timeout": 500,
-    "request_expiration": 500,
-    "cleanup_interval": 1000,
+    "distance": 100000000,
+    "online_timeout": 500000000,
+    "request_expiration": 500000000,
+    "cleanup_interval": 10000000000,
     "poll_seconds": 100
   }
 }
