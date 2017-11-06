@@ -1,8 +1,8 @@
 package model
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestCheckPresence_ParseFail(t *testing.T) {

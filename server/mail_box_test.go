@@ -1,9 +1,9 @@
 package server
 
 import (
-	"testing"
 	"github.com/Sovianum/acquaintance-server/model"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestMailBox_AddAccept(t *testing.T) {

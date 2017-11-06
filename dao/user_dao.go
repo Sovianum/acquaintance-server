@@ -18,7 +18,7 @@ const (
 						 WHERE u1.id = $1
 							AND ST_DistanceSphere(p1.point, p2.point) <= $2
 							AND age(current_timestamp, p2.time) < $3 * interval '1 minute'`
-	checkUserById = `SELECT count(*) cnt FROM Users u WHERE u.id = $1`
+	checkUserById    = `SELECT count(*) cnt FROM Users u WHERE u.id = $1`
 	checkUserByLogin = `SELECT count(*) cnt FROM Users u WHERE u.login = $1`
 )
 
@@ -62,7 +62,7 @@ func (dao *dbUserDAO) GetIdByLogin(login string) (int, error) {
 }
 
 func (dao *dbUserDAO) GetUserById(id int) (*model.User, error) {
-	var user  = new(model.User)
+	var user = new(model.User)
 	var err = dao.db.QueryRow(getUserById, id).Scan(&user.Id, &user.Login, &user.Password, &user.Age, &user.Sex, &user.About)
 	if err != nil {
 		return nil, err
@@ -72,7 +72,7 @@ func (dao *dbUserDAO) GetUserById(id int) (*model.User, error) {
 }
 
 func (dao *dbUserDAO) GetUserByLogin(login string) (*model.User, error) {
-	var user  = new(model.User)
+	var user = new(model.User)
 	var err = dao.db.QueryRow(getUserByLogin, login).Scan(&user.Id, &user.Login, &user.Password, &user.Age, &user.Sex, &user.About)
 	if err != nil {
 		return nil, err

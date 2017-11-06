@@ -2,15 +2,15 @@ package main
 
 import (
 	"database/sql"
-	_ "github.com/lib/pq"
-	"os"
-	"github.com/Sovianum/acquaintance-server/config"
-	"github.com/Sovianum/acquaintance-server/server"
-	"net/http"
-	"github.com/gorilla/handlers"
 	"fmt"
-	"strconv"
+	"github.com/Sovianum/acquaintance-server/config"
 	"github.com/Sovianum/acquaintance-server/mylog"
+	"github.com/Sovianum/acquaintance-server/server"
+	"github.com/gorilla/handlers"
+	_ "github.com/lib/pq"
+	"net/http"
+	"os"
+	"strconv"
 )
 
 const (

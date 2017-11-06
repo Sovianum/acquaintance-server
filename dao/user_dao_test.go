@@ -2,11 +2,11 @@ package dao
 
 import (
 	"errors"
-	"gopkg.in/DATA-DOG/go-sqlmock.v1"
-	"testing"
 	"github.com/Sovianum/acquaintance-server/model"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/crypto/bcrypt"
+	"gopkg.in/DATA-DOG/go-sqlmock.v1"
+	"testing"
 )
 
 func TestDbUserDAO_ExistsByID_UserFound(t *testing.T) {
@@ -72,7 +72,7 @@ func TestDbUserDAO_ExistsById_DBFailed(t *testing.T) {
 	var _, dbErr = userDAO.ExistsById(10)
 
 	assert.NotNil(t, dbErr)
-	assert.Equal(t, "Failed to check" , dbErr.Error())
+	assert.Equal(t, "Failed to check", dbErr.Error())
 }
 
 func TestDbUserDAO_ExistsByLogin_UserFound(t *testing.T) {
@@ -87,7 +87,7 @@ func TestDbUserDAO_ExistsByLogin_UserFound(t *testing.T) {
 		AddRow(1)
 
 	mock.
-	ExpectQuery("SELECT count").
+		ExpectQuery("SELECT count").
 		WithArgs("login").
 		WillReturnRows(rows)
 
@@ -110,7 +110,7 @@ func TestDbUserDAO_ExistsByLogin_UserNotFound(t *testing.T) {
 		AddRow(0)
 
 	mock.
-	ExpectQuery("SELECT count").
+		ExpectQuery("SELECT count").
 		WithArgs("login").
 		WillReturnRows(rows)
 
@@ -130,7 +130,7 @@ func TestDbUserDAO_ExistsByLogin_DBFailed(t *testing.T) {
 	defer db.Close()
 
 	mock.
-	ExpectQuery("SELECT count").
+		ExpectQuery("SELECT count").
 		WithArgs("login").
 		WillReturnError(errors.New("Failed to check"))
 
@@ -138,7 +138,7 @@ func TestDbUserDAO_ExistsByLogin_DBFailed(t *testing.T) {
 	var _, dbErr = userDAO.ExistsByLogin("login")
 
 	assert.NotNil(t, dbErr)
-	assert.Equal(t, "Failed to check" , dbErr.Error())
+	assert.Equal(t, "Failed to check", dbErr.Error())
 }
 
 func TestDbUserDAO_Save_Success(t *testing.T) {
@@ -204,11 +204,11 @@ func TestDbUserDAO_GetUserById_Success(t *testing.T) {
 		AddRow(1, "login", "pass", 100, model.MALE, "about")
 
 	mock.
-	ExpectQuery("SELECT").
+		ExpectQuery("SELECT").
 		WithArgs(1).
 		WillReturnRows(rows)
 
-	var user = &model.User{Id: 1, Login: "login", Password: "pass", Sex: model.MALE, Age: 100, About:"about"}
+	var user = &model.User{Id: 1, Login: "login", Password: "pass", Sex: model.MALE, Age: 100, About: "about"}
 
 	var userDAO = NewDBUserDAO(db)
 	var dbUser, userErr = userDAO.GetUserById(1)
@@ -226,7 +226,7 @@ func TestDbUserDAO_GetUserById_NotFound(t *testing.T) {
 	defer db.Close()
 
 	mock.
-	ExpectQuery("SELECT").
+		ExpectQuery("SELECT").
 		WithArgs(1).
 		WillReturnError(errors.New("user not found"))
 
@@ -249,11 +249,11 @@ func TestDbUserDAO_GetUserByLogin_Success(t *testing.T) {
 		AddRow(1, "login", "pass", 100, model.MALE, "about")
 
 	mock.
-	ExpectQuery("SELECT").
+		ExpectQuery("SELECT").
 		WithArgs("login").
 		WillReturnRows(rows)
 
-	var user = &model.User{Id: 1, Login: "login", Password: "pass", Sex: model.MALE, Age: 100, About:"about"}
+	var user = &model.User{Id: 1, Login: "login", Password: "pass", Sex: model.MALE, Age: 100, About: "about"}
 
 	var userDAO = NewDBUserDAO(db)
 	var dbUser, userErr = userDAO.GetUserByLogin(user.Login)
@@ -271,7 +271,7 @@ func TestDbUserDAO_GetUserByLogin_NotFound(t *testing.T) {
 	defer db.Close()
 
 	mock.
-	ExpectQuery("SELECT").
+		ExpectQuery("SELECT").
 		WithArgs("login").
 		WillReturnError(errors.New("user not found"))
 
@@ -293,7 +293,7 @@ func TestDbUserDAO_GetIdByLogin_Success(t *testing.T) {
 	var rows = sqlmock.NewRows([]string{"id"}).AddRow(1)
 
 	mock.
-	ExpectQuery("SELECT").
+		ExpectQuery("SELECT").
 		WithArgs("login").
 		WillReturnRows(rows)
 
@@ -313,7 +313,7 @@ func TestDbUserDAO_GetIdByLogin_NotFound(t *testing.T) {
 	defer db.Close()
 
 	mock.
-	ExpectQuery("SELECT").
+		ExpectQuery("SELECT").
 		WithArgs("login").
 		WillReturnError(errors.New("user not found"))
 
@@ -336,13 +336,13 @@ func TestDbUserDAO_GetNeighbour_Success(t *testing.T) {
 		AddRow(2, "login2", 102, model.FEMALE, "about2")
 
 	mock.
-	ExpectQuery("SELECT").
+		ExpectQuery("SELECT").
 		WithArgs(0, float64(100), 1).
 		WillReturnRows(rows)
 
 	var users = []*model.User{
-		{Id: 1, Login: "login1", Sex: model.MALE, Age: 101, About:"about1"},
-		{Id: 2, Login: "login2", Sex: model.FEMALE, Age: 102, About:"about2"},
+		{Id: 1, Login: "login1", Sex: model.MALE, Age: 101, About: "about1"},
+		{Id: 2, Login: "login2", Sex: model.FEMALE, Age: 102, About: "about2"},
 	}
 
 	var userDAO = NewDBUserDAO(db)
@@ -364,10 +364,10 @@ func TestDbUserDAO_GetNeighbour_Empty(t *testing.T) {
 	}
 	defer db.Close()
 
-	var rows = sqlmock.NewRows([]string{"id", "login","age", "sex", "about"})
+	var rows = sqlmock.NewRows([]string{"id", "login", "age", "sex", "about"})
 
 	mock.
-	ExpectQuery("SELECT").
+		ExpectQuery("SELECT").
 		WithArgs(0, float64(100), 1).
 		WillReturnRows(rows)
 
@@ -387,7 +387,7 @@ func TestDbUserDAO_GetNeighbour_DBError(t *testing.T) {
 	defer db.Close()
 
 	mock.
-	ExpectQuery("SELECT").
+		ExpectQuery("SELECT").
 		WithArgs(0, float64(100), 1).
 		WillReturnError(errors.New("failed to get"))
 

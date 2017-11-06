@@ -6,15 +6,15 @@ import (
 	"github.com/Sovianum/acquaintance-server/config"
 	"github.com/Sovianum/acquaintance-server/dao"
 	"github.com/Sovianum/acquaintance-server/model"
+	"github.com/Sovianum/acquaintance-server/mylog"
 	"github.com/go-errors/errors"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
 	"time"
-	"io/ioutil"
-	"github.com/Sovianum/acquaintance-server/mylog"
 )
 
 const (
@@ -73,11 +73,11 @@ func TestEnv_UserGetNeighboursGet_BadToken(t *testing.T) {
 
 	// mock user extraction
 	mock.
-	ExpectQuery("SELECT u2").
+		ExpectQuery("SELECT u2").
 		WithArgs(1, distance, onlineTimeout).
 		WillReturnRows(
-		sqlmock.NewRows([]string{"id", "login", "age", "sex", "about"}),
-	)
+			sqlmock.NewRows([]string{"id", "login", "age", "sex", "about"}),
+		)
 
 	var env = getEnv(db)
 	env.conf = getLogicConf()
@@ -106,10 +106,9 @@ func TestEnv_UserGetNeighboursGet_DBErr(t *testing.T) {
 
 	// mock user extraction
 	mock.
-	ExpectQuery("SELECT u2").
+		ExpectQuery("SELECT u2").
 		WithArgs(1, distance, onlineTimeout).
 		WillReturnError(errors.New("err"))
-
 
 	var env = getEnv(db)
 	env.conf = getLogicConf()
@@ -151,8 +150,8 @@ func TestEnv_UserSavePositionPost_Success(t *testing.T) {
 
 	var env = &Env{
 		positionDAO: dao.NewDBPositionDAO(db),
-		conf:    getAuthConf(),
-		logger: mylog.NewLogger(ioutil.Discard),
+		conf:        getAuthConf(),
+		logger:      mylog.NewLogger(ioutil.Discard),
 	}
 
 	var requestMsg, jsonErr = json.Marshal(pos)
@@ -174,7 +173,7 @@ func TestEnv_UserSavePositionPost_Success(t *testing.T) {
 
 func TestEnv_UserSavePositionPost_BadFormat(t *testing.T) {
 	var env = &Env{
-		conf: getAuthConf(),
+		conf:   getAuthConf(),
 		logger: mylog.NewLogger(ioutil.Discard),
 	}
 
@@ -203,7 +202,7 @@ func TestEnv_UserSavePositionPost_Unauthorized(t *testing.T) {
 	}
 
 	var env = &Env{
-		conf: getAuthConf(),
+		conf:   getAuthConf(),
 		logger: mylog.NewLogger(ioutil.Discard),
 	}
 
@@ -231,7 +230,7 @@ func TestEnv_UserSavePositionPost_BadToken(t *testing.T) {
 	}
 
 	var env = &Env{
-		conf: getAuthConf(),
+		conf:   getAuthConf(),
 		logger: mylog.NewLogger(ioutil.Discard),
 	}
 
@@ -274,8 +273,8 @@ func TestEnv_UserSavePositionPost_SaveErr(t *testing.T) {
 
 	var env = &Env{
 		positionDAO: dao.NewDBPositionDAO(db),
-		conf:    getAuthConf(),
-		logger: mylog.NewLogger(ioutil.Discard),
+		conf:        getAuthConf(),
+		logger:      mylog.NewLogger(ioutil.Discard),
 	}
 
 	var requestMsg, jsonErr = json.Marshal(pos)

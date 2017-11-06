@@ -1,11 +1,10 @@
 package server
 
 import (
-	"strings"
-	"strconv"
 	"errors"
+	"strconv"
+	"strings"
 	"time"
-	"fmt"
 )
 
 func (env *Env) RunDaemons() {
@@ -15,14 +14,13 @@ func (env *Env) RunDaemons() {
 func (env *Env) runDaemons() {
 	for {
 		select {
-		case <- time.After(time.Duration(env.conf.Logic.CleanupInterval) * time.Minute):
+		case <-time.After(time.Duration(env.conf.Logic.CleanupInterval) * time.Minute):
 			env.declineAll(env.conf.Logic.RequestExpiration)
 		}
 	}
 }
 
 func (env *Env) declineAll(timeoutMin int) error {
-	fmt.Println("cleaned up")
 	if err := env.meetRequestDAO.DeclineAll(timeoutMin); err != nil {
 		return err
 	}

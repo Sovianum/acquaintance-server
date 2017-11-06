@@ -83,7 +83,7 @@ func (box *mailBox) GetAll(seconds int) []*model.MeetRequest {
 	case <-box.syncChan:
 		box.requestsLock.Lock()
 		for _, request := range box.requestMap {
-			result= append(result, request)
+			result = append(result, request)
 		}
 		box.requestMap = make(requestMapType)
 		box.requestsLock.Unlock()

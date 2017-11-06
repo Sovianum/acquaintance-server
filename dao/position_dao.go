@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	savePosition = "INSERT INTO Position (userId, point) VALUES ($1, ST_MakePoint($2, $3))"
+	savePosition    = "INSERT INTO Position (userId, point) VALUES ($1, ST_MakePoint($2, $3))"
 	getLastPosition = "SELECT id, userId, ST_X(p.point) x, ST_Y(p.point) y, time" +
-		              "FROM Position p WHERE p.userId = $1 ORDER BY time DESC LIMIT 1"
+		"FROM Position p WHERE p.userId = $1 ORDER BY time DESC LIMIT 1"
 )
 
 type PositionDAO interface {

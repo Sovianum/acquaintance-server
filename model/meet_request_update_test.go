@@ -1,10 +1,10 @@
 package model
 
 import (
-	"testing"
-	"github.com/stretchr/testify/assert"
 	"encoding/json"
 	"fmt"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestMeetRequestUpdate_Unmarshal_ParseError(t *testing.T) {

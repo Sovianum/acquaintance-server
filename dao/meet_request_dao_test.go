@@ -22,12 +22,12 @@ func TestMeetRequestDAO_GetRequestById_Success(t *testing.T) {
 	var date = time.Date(2003, 10, 17, 0, 0, 0, 0, time.UTC)
 
 	mock.
-	ExpectQuery("SELECT").
+		ExpectQuery("SELECT").
 		WithArgs(1).
 		WillReturnRows(
-		sqlmock.NewRows([]string{"id", "requesterId", "requestedId", "status", "time"}).
-			AddRow(1, 2, 3, model.StatusPending, date),
-	)
+			sqlmock.NewRows([]string{"id", "requesterId", "requestedId", "status", "time"}).
+				AddRow(1, 2, 3, model.StatusPending, date),
+		)
 
 	var request = &model.MeetRequest{
 		Id:          1,
@@ -53,11 +53,11 @@ func TestMeetRequestDAO_GetRequestById_NotFound(t *testing.T) {
 	defer db.Close()
 
 	mock.
-	ExpectQuery("SELECT").
+		ExpectQuery("SELECT").
 		WithArgs(1).
 		WillReturnRows(
-		sqlmock.NewRows([]string{"id", "requesterId", "requestedId", "status", "time"}),
-	)
+			sqlmock.NewRows([]string{"id", "requesterId", "requestedId", "status", "time"}),
+		)
 
 	var meetRequestDAO = NewMeetDAO(db)
 	var _, dbErr = meetRequestDAO.GetRequestById(1)
@@ -230,7 +230,7 @@ func TestMeetRequestDAO_CreateRequest(t *testing.T) {
 			countRes:          []driver.Value{0},
 
 			accessErrIsNil: false,
-			accessErrMsg: "accessErr",
+			accessErrMsg:   "accessErr",
 
 			createErrIsNil: true,
 
@@ -248,7 +248,7 @@ func TestMeetRequestDAO_CreateRequest(t *testing.T) {
 			accessRes:      []driver.Value{true},
 
 			createErrIsNil: false,
-			createErrMsg: "createErr",
+			createErrMsg:   "createErr",
 
 			expectedId: ImpossibleID,
 		},
@@ -295,7 +295,7 @@ func TestMeetRequestDAO_CreateRequest(t *testing.T) {
 					WithArgs(testCase.requesterId, testCase.requestedId).
 					WillReturnResult(sqlmock.NewResult(1, 1))
 				mock.
-				ExpectQuery("SELECT").
+					ExpectQuery("SELECT").
 					WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(100))
 				mock.ExpectCommit()
 			} else {
@@ -332,30 +332,30 @@ func TestMeetRequestDAO_CreateRequest(t *testing.T) {
 }
 
 func TestMeetRequestDAO_UpdateRequest(t *testing.T) {
-	var cases = []struct{
-		requestId int
-		status string
-		errIsNil bool
-		errMsg string
+	var cases = []struct {
+		requestId    int
+		status       string
+		errIsNil     bool
+		errMsg       string
 		rowsAffected int64
 	}{
 		{
-			requestId: 1,
-			status: model.StatusAccepted,
-			errIsNil: true,
+			requestId:    1,
+			status:       model.StatusAccepted,
+			errIsNil:     true,
 			rowsAffected: 1,
 		},
 		{
-			requestId: 1,
-			status: model.StatusAccepted,
-			errIsNil: true,
+			requestId:    1,
+			status:       model.StatusAccepted,
+			errIsNil:     true,
 			rowsAffected: 0,
 		},
 		{
 			requestId: 1,
-			status: model.StatusAccepted,
-			errIsNil: false,
-			errMsg: "err",
+			status:    model.StatusAccepted,
+			errIsNil:  false,
+			errMsg:    "err",
 		},
 	}
 
@@ -368,12 +368,12 @@ func TestMeetRequestDAO_UpdateRequest(t *testing.T) {
 
 		if testCase.errIsNil {
 			mock.
-			ExpectExec("UPDATE").
+				ExpectExec("UPDATE").
 				WithArgs(model.StatusAccepted, testCase.requestId, 100).
 				WillReturnResult(sqlmock.NewResult(1, testCase.rowsAffected))
 		} else {
 			mock.
-			ExpectExec("UPDATE").
+				ExpectExec("UPDATE").
 				WithArgs(model.StatusAccepted, testCase.requestId, 100).
 				WillReturnError(errors.New(testCase.errMsg))
 		}
@@ -392,4 +392,3 @@ func TestMeetRequestDAO_UpdateRequest(t *testing.T) {
 		db.Close()
 	}
 }
-

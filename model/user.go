@@ -1,14 +1,14 @@
 package model
 
 import (
+	"encoding/json"
 	"errors"
 	"strings"
-	"encoding/json"
 )
 
 const (
-	MALE   = "M"
-	FEMALE = "F"
+	MALE    = "M"
+	FEMALE  = "F"
 	UNKNOWN = ""
 
 	UserRequiredLogin      = "\"login\" field required"

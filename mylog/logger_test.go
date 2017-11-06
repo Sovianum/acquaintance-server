@@ -15,7 +15,6 @@ const (
 	url    = "/URL"
 )
 
-
 func TestLogger_LogRequestStart(t *testing.T) {
 	var writer bytes.Buffer
 	var logger = getLogger(&writer)

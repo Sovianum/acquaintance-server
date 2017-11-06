@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	MeetRequestUpdateRequiredId = "\"id\" field required"
-	MeetRequestUpdateRequiredStatus  = "\"status\" field required"
+	MeetRequestUpdateRequiredId     = "\"id\" field required"
+	MeetRequestUpdateRequiredStatus = "\"status\" field required"
 )
 
 type MeetRequestUpdate struct {
@@ -44,5 +44,3 @@ func (update *MeetRequestUpdate) Validate() error {
 	}
 	return nil
 }
-
-

@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"github.com/Sovianum/acquaintance-server/config"
 	"github.com/Sovianum/acquaintance-server/model"
+	"github.com/Sovianum/acquaintance-server/mylog"
 	"github.com/Sovianum/acquaintance-server/server/mocks"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/patrickmn/go-cache"
 	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"testing"
 	"time"
-	"io/ioutil"
-	"github.com/Sovianum/acquaintance-server/mylog"
 )
 
 const (
@@ -31,7 +31,7 @@ func TestEnv_CreateRequest_Success(t *testing.T) {
 		conf:             getTotalConf(),
 		meetRequestDAO:   &mocks.MeetRequestDAOMockSuccess{},
 		meetRequestCache: cache.New(time.Second*defaultExpiration, time.Second*defaultCleanup),
-		logger: mylog.NewLogger(ioutil.Discard),
+		logger:           mylog.NewLogger(ioutil.Discard),
 	}
 	var tokenStr, _ = env.generateTokenString(mocks.RequesterId, "login")
 
@@ -50,9 +50,9 @@ func TestEnv_CreateRequest_Success(t *testing.T) {
 
 func TestEnv_CreateRequest_NoIdInToken(t *testing.T) {
 	var env = &Env{
-		conf: getTotalConf(),
+		conf:           getTotalConf(),
 		meetRequestDAO: &mocks.MeetRequestDAOMockSuccess{},
-		logger: mylog.NewLogger(ioutil.Discard),
+		logger:         mylog.NewLogger(ioutil.Discard),
 	}
 	var tokenStr, _ = getIncompleteToken(env)
 
@@ -92,9 +92,9 @@ func TestEnv_CreateRequest_Conflict(t *testing.T) {
 	assert.Nil(t, jsonErr)
 
 	var env = &Env{
-		conf: getTotalConf(),
+		conf:           getTotalConf(),
 		meetRequestDAO: &mocks.MeetRequestDAOMockCreateConflict{},
-		logger: mylog.NewLogger(ioutil.Discard),
+		logger:         mylog.NewLogger(ioutil.Discard),
 	}
 
 	var tokenStr, _ = env.generateTokenString(1, "login")
@@ -118,9 +118,9 @@ func TestEnv_CreateRequest_Error(t *testing.T) {
 	assert.Nil(t, jsonErr)
 
 	var env = &Env{
-		conf: getTotalConf(),
+		conf:           getTotalConf(),
 		meetRequestDAO: &mocks.MeetRequestDAOMockCreateError{},
-		logger: mylog.NewLogger(ioutil.Discard),
+		logger:         mylog.NewLogger(ioutil.Discard),
 	}
 
 	var tokenStr, _ = env.generateTokenString(1, "login")
@@ -139,7 +139,7 @@ func TestEnv_CreateRequest_Error(t *testing.T) {
 }
 
 func TestEnv_GetRequests_Success(t *testing.T) {
-	var env = &Env{conf: getTotalConf(), meetRequestDAO: &mocks.MeetRequestDAOMockSuccess{}, logger: mylog.NewLogger(ioutil.Discard),}
+	var env = &Env{conf: getTotalConf(), meetRequestDAO: &mocks.MeetRequestDAOMockSuccess{}, logger: mylog.NewLogger(ioutil.Discard)}
 	var tokenStr, _ = env.generateTokenString(1, "login")
 
 	var rec, recErr = getRecorder(
@@ -166,7 +166,7 @@ func TestEnv_GetRequests_Success(t *testing.T) {
 }
 
 func TestEnv_GetRequests_Empty(t *testing.T) {
-	var env = &Env{conf: getTotalConf(), meetRequestDAO: &mocks.MeetRequestDAOMockGetRequestsEmpty{}, logger: mylog.NewLogger(ioutil.Discard),}
+	var env = &Env{conf: getTotalConf(), meetRequestDAO: &mocks.MeetRequestDAOMockGetRequestsEmpty{}, logger: mylog.NewLogger(ioutil.Discard)}
 	var tokenStr, _ = env.generateTokenString(1, "login")
 
 	var rec, recErr = getRecorder(
@@ -193,7 +193,7 @@ func TestEnv_GetRequests_Empty(t *testing.T) {
 }
 
 func TestEnv_GetRequests_NoIdInToken(t *testing.T) {
-	var env = &Env{conf: getTotalConf(), meetRequestDAO: &mocks.MeetRequestDAOMockSuccess{}, logger: mylog.NewLogger(ioutil.Discard),}
+	var env = &Env{conf: getTotalConf(), meetRequestDAO: &mocks.MeetRequestDAOMockSuccess{}, logger: mylog.NewLogger(ioutil.Discard)}
 	var tokenStr, _ = getIncompleteToken(env)
 
 	var rec, recErr = getRecorder(
@@ -210,7 +210,7 @@ func TestEnv_GetRequests_NoIdInToken(t *testing.T) {
 }
 
 func TestEnv_GetRequests_BadToken(t *testing.T) {
-	var env = &Env{conf: getTotalConf(), meetRequestDAO: &mocks.MeetRequestDAOMockSuccess{}, logger: mylog.NewLogger(ioutil.Discard),}
+	var env = &Env{conf: getTotalConf(), meetRequestDAO: &mocks.MeetRequestDAOMockSuccess{}, logger: mylog.NewLogger(ioutil.Discard)}
 	var tokenStr = "Bad token"
 
 	var rec, recErr = getRecorder(
@@ -227,7 +227,7 @@ func TestEnv_GetRequests_BadToken(t *testing.T) {
 }
 
 func TestEnv_GetRequests_Error(t *testing.T) {
-	var env = &Env{conf: getTotalConf(), meetRequestDAO: &mocks.MeetRequestDAOMockGetRequestsError{}, logger: mylog.NewLogger(ioutil.Discard),}
+	var env = &Env{conf: getTotalConf(), meetRequestDAO: &mocks.MeetRequestDAOMockGetRequestsError{}, logger: mylog.NewLogger(ioutil.Discard)}
 	var tokenStr, _ = env.generateTokenString(1, "login")
 
 	var rec, recErr = getRecorder(
@@ -244,7 +244,7 @@ func TestEnv_GetRequests_Error(t *testing.T) {
 }
 
 func TestEnv_UpdateRequest_NoIdInToken(t *testing.T) {
-	var env = &Env{conf: getTotalConf(), meetRequestDAO: &mocks.MeetRequestDAOMockSuccess{}, logger: mylog.NewLogger(ioutil.Discard),}
+	var env = &Env{conf: getTotalConf(), meetRequestDAO: &mocks.MeetRequestDAOMockSuccess{}, logger: mylog.NewLogger(ioutil.Discard)}
 	var tokenStr, _ = getIncompleteToken(env)
 
 	var rec, recErr = getRecorder(
@@ -261,7 +261,7 @@ func TestEnv_UpdateRequest_NoIdInToken(t *testing.T) {
 }
 
 func TestEnv_UpdateRequest_BadToken(t *testing.T) {
-	var env = &Env{conf: getTotalConf(), meetRequestDAO: &mocks.MeetRequestDAOMockSuccess{}, logger: mylog.NewLogger(ioutil.Discard),}
+	var env = &Env{conf: getTotalConf(), meetRequestDAO: &mocks.MeetRequestDAOMockSuccess{}, logger: mylog.NewLogger(ioutil.Discard)}
 	var tokenStr = "bad string"
 
 	var rec, recErr = getRecorder(
@@ -282,7 +282,7 @@ func TestEnv_UpdateRequest_NoRequest(t *testing.T) {
 		conf:             getTotalConf(),
 		meetRequestDAO:   &mocks.MeetRequestDAOMockUpdateNoRequest{},
 		meetRequestCache: cache.New(time.Second*defaultExpiration, time.Second*defaultCleanup),
-		logger: mylog.NewLogger(ioutil.Discard),
+		logger:           mylog.NewLogger(ioutil.Discard),
 	}
 	var tokenStr, _ = env.generateTokenString(1, "login")
 
@@ -304,7 +304,7 @@ func TestEnv_UpdateRequest_NoRequest(t *testing.T) {
 }
 
 func TestEnv_UpdateRequest_BadStatus(t *testing.T) {
-	var env = &Env{conf: getTotalConf(), meetRequestDAO: &mocks.MeetRequestDAOMockUpdateNoRequest{}, logger: mylog.NewLogger(ioutil.Discard),}
+	var env = &Env{conf: getTotalConf(), meetRequestDAO: &mocks.MeetRequestDAOMockUpdateNoRequest{}, logger: mylog.NewLogger(ioutil.Discard)}
 	var tokenStr, _ = env.generateTokenString(1, "login")
 
 	var update = model.MeetRequestUpdate{Id: 1, Status: "BAD"}
@@ -329,7 +329,7 @@ func TestEnv_UpdateRequest_AcceptSuccess(t *testing.T) {
 		conf:             getTotalConf(),
 		meetRequestDAO:   &mocks.MeetRequestDAOMockSuccess{},
 		meetRequestCache: cache.New(time.Second*defaultExpiration, time.Second*defaultCleanup),
-		logger: mylog.NewLogger(ioutil.Discard),
+		logger:           mylog.NewLogger(ioutil.Discard),
 	}
 	var tokenStr, _ = env.generateTokenString(mocks.RequestedId, "login")
 
@@ -355,7 +355,7 @@ func TestEnv_UpdateRequest_AcceptNotFound(t *testing.T) {
 		conf:             getTotalConf(),
 		meetRequestDAO:   &mocks.MeetRequestDAOMockGetRequestByIdNotFound{},
 		meetRequestCache: cache.New(time.Second*defaultExpiration, time.Second*defaultCleanup),
-		logger: mylog.NewLogger(ioutil.Discard),
+		logger:           mylog.NewLogger(ioutil.Discard),
 	}
 	var tokenStr, _ = env.generateTokenString(mocks.RequestedId, "login")
 
@@ -381,7 +381,7 @@ func TestEnv_UpdateRequest_AcceptLocked(t *testing.T) {
 		conf:             getTotalConf(),
 		meetRequestDAO:   &mocks.MeetRequestDAOMockSuccess{},
 		meetRequestCache: cache.New(time.Second*defaultExpiration, time.Second*defaultCleanup),
-		logger: mylog.NewLogger(ioutil.Discard),
+		logger:           mylog.NewLogger(ioutil.Discard),
 	}
 	var request, _ = env.meetRequestDAO.GetRequestById(1)
 	env.handleRequestAccept(request.Id, request.RequestedId)
@@ -410,7 +410,7 @@ func TestEnv_UpdateRequest_DeclineSuccess(t *testing.T) {
 		conf:             getTotalConf(),
 		meetRequestDAO:   &mocks.MeetRequestDAOMockSuccess{},
 		meetRequestCache: cache.New(time.Second*defaultExpiration, time.Second*defaultCleanup),
-		logger: mylog.NewLogger(ioutil.Discard),
+		logger:           mylog.NewLogger(ioutil.Discard),
 	}
 	var tokenStr, _ = env.generateTokenString(mocks.RequestedId, "login")
 
@@ -436,7 +436,7 @@ func TestEnv_UpdateRequest_Error(t *testing.T) {
 		conf:             getTotalConf(),
 		meetRequestDAO:   &mocks.MeetRequestDAOMockUpdateError{},
 		meetRequestCache: cache.New(time.Second*defaultExpiration, time.Second*defaultCleanup),
-		logger: mylog.NewLogger(ioutil.Discard),
+		logger:           mylog.NewLogger(ioutil.Discard),
 	}
 	var tokenStr, _ = env.generateTokenString(mocks.RequestedId, "login")
 
@@ -462,7 +462,7 @@ func TestEnv_GetNewRequests_Success(t *testing.T) {
 		conf:             getTotalConf(),
 		meetRequestDAO:   &mocks.MeetRequestDAOMockSuccess{},
 		meetRequestCache: cache.New(time.Second*defaultExpiration, time.Second*defaultCleanup),
-		logger: mylog.NewLogger(ioutil.Discard),
+		logger:           mylog.NewLogger(ioutil.Discard),
 	}
 	var tokenStr, _ = env.generateTokenString(mocks.RequestedId, "login")
 
@@ -496,7 +496,7 @@ func TestEnv_GetNewRequests_NoIdInToken(t *testing.T) {
 		conf:             getTotalConf(),
 		meetRequestDAO:   &mocks.MeetRequestDAOMockSuccess{},
 		meetRequestCache: cache.New(time.Second*defaultExpiration, time.Second*defaultCleanup),
-		logger: mylog.NewLogger(ioutil.Discard),
+		logger:           mylog.NewLogger(ioutil.Discard),
 	}
 	var tokenStr, _ = getIncompleteToken(env)
 
@@ -518,7 +518,7 @@ func TestEnv_GetNewRequests_BadToken(t *testing.T) {
 		conf:             getTotalConf(),
 		meetRequestDAO:   &mocks.MeetRequestDAOMockSuccess{},
 		meetRequestCache: cache.New(time.Second*defaultExpiration, time.Second*defaultCleanup),
-		logger: mylog.NewLogger(ioutil.Discard),
+		logger:           mylog.NewLogger(ioutil.Discard),
 	}
 	var tokenStr = "Bad token"
 
@@ -540,7 +540,7 @@ func TestEnv_GetNewRequests_Empty(t *testing.T) {
 		conf:             getTotalConf(),
 		meetRequestDAO:   &mocks.MeetRequestDAOMockSuccess{},
 		meetRequestCache: cache.New(time.Second*defaultExpiration, time.Second*defaultCleanup),
-		logger: mylog.NewLogger(ioutil.Discard),
+		logger:           mylog.NewLogger(ioutil.Discard),
 	}
 	var tokenStr, _ = env.generateTokenString(mocks.RequestedId, "login")
 

@@ -11,7 +11,6 @@ type Validator interface {
 	Validate() error
 }
 
-
 // Function checks whether jsonData contains all fields from fields slice.
 // errMessages slice contains messages which are used if some field is not found.
 // Resulting error message consists of all corresponding errMessages, joined with ";\n"

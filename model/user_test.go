@@ -1,9 +1,9 @@
 package model
 
 import (
+	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"testing"
-	"encoding/json"
 )
 
 func TestUser_Unmarshal_ParseError(t *testing.T) {

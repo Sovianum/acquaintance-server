@@ -1,15 +1,15 @@
 package server
 
 import (
-	"net/http"
-	"io/ioutil"
-	"github.com/Sovianum/acquaintance-server/model"
 	"encoding/json"
-	"strings"
-	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"errors"
+	"fmt"
 	"github.com/Sovianum/acquaintance-server/common"
+	"github.com/Sovianum/acquaintance-server/model"
+	"github.com/dgrijalva/jwt-go"
+	"io/ioutil"
+	"net/http"
+	"strings"
 )
 
 const (
@@ -111,8 +111,8 @@ func (env *Env) getIdFromRequest(r *http.Request) (id int, code int, err error) 
 	}
 	var authHeader = authHeaderList[0]
 
-	var fields = strings.Fields(authHeader)	// getting last word to remove Bearer word from header
-	var tokenString = fields[len(fields) - 1]
+	var fields = strings.Fields(authHeader) // getting last word to remove Bearer word from header
+	var tokenString = fields[len(fields)-1]
 
 	var token, tokenErr = env.parseTokenString(tokenString)
 	if tokenErr != nil {

@@ -1,29 +1,29 @@
 package server
 
 import (
+	"crypto/sha256"
+	"database/sql"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/Sovianum/acquaintance-server/config"
 	"github.com/Sovianum/acquaintance-server/dao"
 	"github.com/Sovianum/acquaintance-server/model"
+	"github.com/Sovianum/acquaintance-server/mylog"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/DATA-DOG/go-sqlmock.v1"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
-	"errors"
-	"crypto/sha256"
-	"fmt"
-	"database/sql"
-	"github.com/Sovianum/acquaintance-server/mylog"
-	"io/ioutil"
 )
 
 const (
-	urlSample = "URL"
+	urlSample  = "URL"
 	expireDays = 100
-	tokenKey = "token90"
+	tokenKey   = "token90"
 )
 
 type headerPair struct {
@@ -86,7 +86,7 @@ func TestEnv_UserRegisterPost_Success(t *testing.T) {
 func TestEnv_UserRegisterPost_ParseFail(t *testing.T) {
 
 	var env = &Env{
-		conf: getAuthConf(),
+		conf:   getAuthConf(),
 		logger: mylog.NewLogger(ioutil.Discard),
 	}
 
@@ -120,7 +120,7 @@ func TestEnv_UserRegisterPost_CheckFail(t *testing.T) {
 
 	// mock exists
 	mock.
-	ExpectQuery("SELECT count").
+		ExpectQuery("SELECT count").
 		WithArgs(user.Login).
 		WillReturnError(errors.New("db fail"))
 
@@ -159,7 +159,7 @@ func TestEnv_UserRegisterPost_Conflict(t *testing.T) {
 
 	// mock exists
 	mock.
-	ExpectQuery("SELECT count").
+		ExpectQuery("SELECT count").
 		WithArgs(user.Login).
 		WillReturnRows(sqlmock.NewRows([]string{"cnt"}).AddRow(1))
 
@@ -202,19 +202,19 @@ func TestEnv_UserRegisterPost_SaveErr(t *testing.T) {
 
 	// mock exists
 	mock.
-	ExpectQuery("SELECT count").
+		ExpectQuery("SELECT count").
 		WithArgs(user.Login).
 		WillReturnRows(sqlmock.NewRows([]string{"cnt"}).AddRow(0))
 
 	// mock user insertion
 	mock.
-	ExpectExec("INSERT INTO Users").
+		ExpectExec("INSERT INTO Users").
 		WithArgs(user.Login, hash, user.Age, user.Sex, user.About).
 		WillReturnError(errors.New("db fail"))
 
 	// mock id selection
 	mock.
-	ExpectQuery("SELECT id FROM").
+		ExpectQuery("SELECT id FROM").
 		WithArgs(user.Login).
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 
@@ -255,19 +255,19 @@ func TestEnv_UserRegisterPost_IdExtraction(t *testing.T) {
 
 	// mock exists
 	mock.
-	ExpectQuery("SELECT count").
+		ExpectQuery("SELECT count").
 		WithArgs(user.Login).
 		WillReturnRows(sqlmock.NewRows([]string{"cnt"}).AddRow(0))
 
 	// mock user insertion
 	mock.
-	ExpectExec("INSERT INTO Users").
+		ExpectExec("INSERT INTO Users").
 		WithArgs(user.Login, hash, user.Age, user.Sex, user.About).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	// mock id selection
 	mock.
-	ExpectQuery("SELECT id FROM").
+		ExpectQuery("SELECT id FROM").
 		WithArgs(user.Login).
 		WillReturnError(errors.New("db fail"))
 
@@ -295,8 +295,8 @@ func TestEnv_UserRegisterPost_NoLogin(t *testing.T) {
 	}
 
 	var env = &Env{
-		conf: getAuthConf(),
-		logger:mylog.NewLogger(ioutil.Discard),
+		conf:   getAuthConf(),
+		logger: mylog.NewLogger(ioutil.Discard),
 	}
 
 	var requestMsg, jsonErr = json.Marshal(user)
@@ -317,13 +317,13 @@ func TestEnv_UserRegisterPost_NoLogin(t *testing.T) {
 func TestEnv_UserRegisterPost_NoPassword(t *testing.T) {
 	var user = &model.User{
 		Login: "login",
-		About:    "about",
-		Sex:      model.MALE,
-		Age:      100,
+		About: "about",
+		Sex:   model.MALE,
+		Age:   100,
 	}
 
 	var env = &Env{
-		conf: getAuthConf(),
+		conf:   getAuthConf(),
 		logger: mylog.NewLogger(ioutil.Discard),
 	}
 
@@ -362,18 +362,18 @@ func TestEnv_UserSignInPost_Success(t *testing.T) {
 
 	// mock exists
 	mock.
-	ExpectQuery("SELECT count").
+		ExpectQuery("SELECT count").
 		WithArgs(user.Login).
 		WillReturnRows(sqlmock.NewRows([]string{"cnt"}).AddRow(1))
 
 	// mock user extraction
 	var hash, _ = env.hashFunc([]byte(user.Password))
 	mock.
-	ExpectQuery("SELECT id").
+		ExpectQuery("SELECT id").
 		WithArgs(user.Login).
 		WillReturnRows(
-		sqlmock.NewRows(
-			[]string{"id", "login", "password", "age", "sex", "about"}).
+			sqlmock.NewRows(
+				[]string{"id", "login", "password", "age", "sex", "about"}).
 				AddRow(1, "login", hash, 100, model.MALE, "about"),
 		)
 
@@ -410,19 +410,19 @@ func TestEnv_UserSignInPost_WrongPassword(t *testing.T) {
 
 	// mock exists
 	mock.
-	ExpectQuery("SELECT count").
+		ExpectQuery("SELECT count").
 		WithArgs(user.Login).
 		WillReturnRows(sqlmock.NewRows([]string{"cnt"}).AddRow(1))
 
 	// mock user extraction
 	mock.
-	ExpectQuery("SELECT id").
+		ExpectQuery("SELECT id").
 		WithArgs(user.Login).
 		WillReturnRows(
-		sqlmock.NewRows(
-			[]string{"id", "login", "password", "age", "sex", "about"}).
-			AddRow(1, "login", "pass", 100, model.MALE, "about"),
-	)
+			sqlmock.NewRows(
+				[]string{"id", "login", "password", "age", "sex", "about"}).
+				AddRow(1, "login", "pass", 100, model.MALE, "about"),
+		)
 
 	var env = getEnv(db)
 
@@ -443,7 +443,7 @@ func TestEnv_UserSignInPost_WrongPassword(t *testing.T) {
 
 func TestEnv_UserSignInPost_ParseError(t *testing.T) {
 	var env = &Env{
-		conf: getAuthConf(),
+		conf:   getAuthConf(),
 		logger: mylog.NewLogger(ioutil.Discard),
 	}
 
@@ -477,7 +477,7 @@ func TestEnv_UserSignInPost_CheckDBFail(t *testing.T) {
 
 	// mock exists
 	mock.
-	ExpectQuery("SELECT count").
+		ExpectQuery("SELECT count").
 		WithArgs(user.Login).
 		WillReturnError(errors.New("db fail"))
 
@@ -516,7 +516,7 @@ func TestEnv_UserSignInPost_NotFound(t *testing.T) {
 
 	// mock exists
 	mock.
-	ExpectQuery("SELECT count").
+		ExpectQuery("SELECT count").
 		WithArgs(user.Login).
 		WillReturnRows(sqlmock.NewRows([]string{"cnt"}).AddRow(0))
 
@@ -555,13 +555,13 @@ func TestEnv_UserSignInPost_IdExtractionFail(t *testing.T) {
 
 	// mock exists
 	mock.
-	ExpectQuery("SELECT count").
+		ExpectQuery("SELECT count").
 		WithArgs(user.Login).
 		WillReturnRows(sqlmock.NewRows([]string{"cnt"}).AddRow(1))
 
 	// mock id selection
 	mock.
-	ExpectQuery("SELECT id FROM").
+		ExpectQuery("SELECT id FROM").
 		WithArgs(user.Login).
 		WillReturnError(errors.New("db fail"))
 
@@ -584,7 +584,7 @@ func TestEnv_UserSignInPost_IdExtractionFail(t *testing.T) {
 
 func getAuthConf() config.Conf {
 	return config.Conf{
-		Auth:config.AuthConfig{
+		Auth: config.AuthConfig{
 			ExpireDays: expireDays,
 			TokenKey:   tokenKey,
 		},
@@ -621,8 +621,8 @@ func getRecorder(
 
 func getEnv(db *sql.DB) *Env {
 	return &Env{
-		userDAO:  dao.NewDBUserDAO(db),
-		conf: getAuthConf(),
+		userDAO: dao.NewDBUserDAO(db),
+		conf:    getAuthConf(),
 		hashFunc: func(password []byte) ([]byte, error) {
 			var h = sha256.New()
 			h.Write(password)

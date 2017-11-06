@@ -1,8 +1,8 @@
 package dao
 
 import (
-	"github.com/Sovianum/acquaintance-server/model"
 	"database/sql"
+	"github.com/Sovianum/acquaintance-server/model"
 )
 
 const (

@@ -2,8 +2,8 @@ package mylog
 
 import (
 	golog "github.com/op/go-logging"
-	"net/http"
 	"io"
+	"net/http"
 )
 
 const (

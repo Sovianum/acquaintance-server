@@ -2,9 +2,9 @@ package mocks
 
 import (
 	"errors"
+	"github.com/Sovianum/acquaintance-server/dao"
 	"github.com/Sovianum/acquaintance-server/model"
 	"time"
-	"github.com/Sovianum/acquaintance-server/dao"
 )
 
 const (
@@ -85,7 +85,7 @@ func (*MeetRequestDAOMockSuccess) GetRequestById(id int) (*model.MeetRequest, er
 	return getPendingRequestByIdSuccess(id)
 }
 
-func (*MeetRequestDAOMockSuccess) DeclineAll(timeoutMin int) error {return nil}
+func (*MeetRequestDAOMockSuccess) DeclineAll(timeoutMin int) error { return nil }
 
 type MeetRequestDAOMockCreateConflict struct{}
 
@@ -105,7 +105,7 @@ func (*MeetRequestDAOMockCreateConflict) GetRequestById(id int) (*model.MeetRequ
 	return getPendingRequestByIdSuccess(id)
 }
 
-func (*MeetRequestDAOMockCreateConflict) DeclineAll(timeoutMin int) error {return nil}
+func (*MeetRequestDAOMockCreateConflict) DeclineAll(timeoutMin int) error { return nil }
 
 type MeetRequestDAOMockCreateError struct{}
 
@@ -125,7 +125,7 @@ func (*MeetRequestDAOMockCreateError) GetRequestById(id int) (*model.MeetRequest
 	return getPendingRequestByIdSuccess(id)
 }
 
-func (*MeetRequestDAOMockCreateError) DeclineAll(timeoutMin int) error {return nil}
+func (*MeetRequestDAOMockCreateError) DeclineAll(timeoutMin int) error { return nil }
 
 type MeetRequestDAOMockGetRequestsEmpty struct{}
 
@@ -145,7 +145,7 @@ func (*MeetRequestDAOMockGetRequestsEmpty) GetRequestById(id int) (*model.MeetRe
 	return getPendingRequestByIdSuccess(id)
 }
 
-func (*MeetRequestDAOMockGetRequestsEmpty) DeclineAll(timeoutMin int) error {return nil}
+func (*MeetRequestDAOMockGetRequestsEmpty) DeclineAll(timeoutMin int) error { return nil }
 
 type MeetRequestDAOMockGetRequestsError struct{}
 
@@ -165,7 +165,7 @@ func (*MeetRequestDAOMockGetRequestsError) GetRequestById(id int) (*model.MeetRe
 	return getPendingRequestByIdSuccess(id)
 }
 
-func (*MeetRequestDAOMockGetRequestsError) DeclineAll(timeoutMin int) error {return nil}
+func (*MeetRequestDAOMockGetRequestsError) DeclineAll(timeoutMin int) error { return nil }
 
 type MeetRequestDAOMockUpdateNoRequest struct{}
 
@@ -185,7 +185,7 @@ func (*MeetRequestDAOMockUpdateNoRequest) GetRequestById(id int) (*model.MeetReq
 	return getPendingRequestByIdSuccess(id)
 }
 
-func (*MeetRequestDAOMockUpdateNoRequest) DeclineAll(timeoutMin int) error {return nil}
+func (*MeetRequestDAOMockUpdateNoRequest) DeclineAll(timeoutMin int) error { return nil }
 
 type MeetRequestDAOMockUpdateError struct{}
 
@@ -205,7 +205,7 @@ func (*MeetRequestDAOMockUpdateError) GetRequestById(id int) (*model.MeetRequest
 	return getPendingRequestByIdSuccess(id)
 }
 
-func (*MeetRequestDAOMockUpdateError) DeclineAll(timeoutMin int) error {return nil}
+func (*MeetRequestDAOMockUpdateError) DeclineAll(timeoutMin int) error { return nil }
 
 type MeetRequestDAOMockGetRequestByIdNotFound struct{}
 
@@ -225,4 +225,4 @@ func (*MeetRequestDAOMockGetRequestByIdNotFound) GetRequestById(id int) (*model.
 	return getPendingRequestByIdNotFound(id)
 }
 
-func (*MeetRequestDAOMockGetRequestByIdNotFound) DeclineAll(timeoutMin int) error {return nil}
+func (*MeetRequestDAOMockGetRequestByIdNotFound) DeclineAll(timeoutMin int) error { return nil }

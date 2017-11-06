@@ -1,11 +1,11 @@
 package dao
 
 import (
-	"testing"
-	"gopkg.in/DATA-DOG/go-sqlmock.v1"
-	"github.com/stretchr/testify/assert"
 	"errors"
 	"github.com/Sovianum/acquaintance-server/model"
+	"github.com/stretchr/testify/assert"
+	"gopkg.in/DATA-DOG/go-sqlmock.v1"
+	"testing"
 	"time"
 )
 
@@ -18,7 +18,7 @@ func TestDbPositionDAO_Save_Success(t *testing.T) {
 	defer db.Close()
 
 	mock.
-	ExpectExec("INSERT INTO Position").
+		ExpectExec("INSERT INTO Position").
 		WithArgs(100, 10., 20.).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
@@ -39,7 +39,7 @@ func TestDbPositionDAO_Save_DuplicateLogin(t *testing.T) {
 	defer db.Close()
 
 	mock.
-	ExpectExec("INSERT INTO Position").
+		ExpectExec("INSERT INTO Position").
 		WithArgs(100, 10., 20.).
 		WillReturnError(errors.New("Duplicate id"))
 
@@ -65,7 +65,7 @@ func TestDbPositionDAO_Get_Success(t *testing.T) {
 		AddRow(1, 100, 10., 20., date)
 
 	mock.
-	ExpectQuery("SELECT id, userId").
+		ExpectQuery("SELECT id, userId").
 		WithArgs(1).
 		WillReturnRows(rows)
 
@@ -87,7 +87,7 @@ func TestDbPositionDAO_Get_NotFound(t *testing.T) {
 	defer db.Close()
 
 	mock.
-	ExpectQuery("SELECT").
+		ExpectQuery("SELECT").
 		WithArgs(1).
 		WillReturnError(errors.New("position not found"))
 

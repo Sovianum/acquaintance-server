@@ -1,16 +1,16 @@
 package server
 
 import (
-	"net/http"
-	"io/ioutil"
-	"github.com/Sovianum/acquaintance-server/model"
 	"encoding/json"
 	"errors"
-	"github.com/Sovianum/acquaintance-server/common"
-	"strconv"
-	"github.com/patrickmn/go-cache"
 	"fmt"
+	"github.com/Sovianum/acquaintance-server/common"
 	"github.com/Sovianum/acquaintance-server/dao"
+	"github.com/Sovianum/acquaintance-server/model"
+	"github.com/patrickmn/go-cache"
+	"io/ioutil"
+	"net/http"
+	"strconv"
 )
 
 const (
@@ -190,7 +190,7 @@ func (env *Env) handleRequestAccept(requestId int, userId int) (int, error) {
 		}
 		return http.StatusOK, nil
 	}
-	var rightsCheckFunc = func(request *model.MeetRequest, userId int) bool {return request.RequestedId == userId}
+	var rightsCheckFunc = func(request *model.MeetRequest, userId int) bool { return request.RequestedId == userId }
 	var boxExtractFunc = func(request *model.MeetRequest) (MailBox, error) {
 		return env.getMailBox(request.RequesterId)
 	}
@@ -202,7 +202,7 @@ func (env *Env) handleRequestDecline(requestId int, userId int) (int, error) {
 		box.AddDecline(request)
 		return http.StatusOK, nil
 	}
-	var rightsCheckFunc = func(request *model.MeetRequest, userId int) bool {return request.RequestedId == userId}
+	var rightsCheckFunc = func(request *model.MeetRequest, userId int) bool { return request.RequestedId == userId }
 	var boxExtractFunc = func(request *model.MeetRequest) (MailBox, error) {
 		return env.getMailBox(request.RequesterId)
 	}

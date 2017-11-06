@@ -3,12 +3,12 @@ package server
 import (
 	"encoding/json"
 	"errors"
+	"github.com/Sovianum/acquaintance-server/common"
 	"github.com/Sovianum/acquaintance-server/model"
 	"github.com/dgrijalva/jwt-go"
 	"io/ioutil"
 	"net/http"
 	"time"
-	"github.com/Sovianum/acquaintance-server/common"
 )
 
 const (
