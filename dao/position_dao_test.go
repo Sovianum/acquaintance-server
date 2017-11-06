@@ -72,7 +72,7 @@ func TestDbPositionDAO_Get_Success(t *testing.T) {
 	var position = &model.Position{Id: 1, UserId: 100, Point: model.Point{X: 10., Y: 20.}, Time: model.QuotedTime(date)}
 
 	var positionDAO = NewDBPositionDAO(db)
-	var dbPosition, userErr = positionDAO.GetUserPosition(1)
+	var dbPosition, userErr = positionDAO.GetUserPositionById(1)
 
 	assert.Nil(t, userErr)
 	assert.Equal(t, position, dbPosition)
@@ -92,7 +92,7 @@ func TestDbPositionDAO_Get_NotFound(t *testing.T) {
 		WillReturnError(errors.New("position not found"))
 
 	var positionDAO = NewDBPositionDAO(db)
-	var _, positionErr = positionDAO.GetUserPosition(1)
+	var _, positionErr = positionDAO.GetUserPositionById(1)
 
 	assert.NotNil(t, positionErr)
 	assert.Equal(t, "position not found", positionErr.Error())

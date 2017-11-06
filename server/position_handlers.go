@@ -10,10 +10,13 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"github.com/gorilla/mux"
+	"strconv"
 )
 
 const (
 	authorizationStr = "Authorization"
+	id = "id"
 )
 
 func (env *Env) UserGetNeighboursGet(w http.ResponseWriter, r *http.Request) {
@@ -67,6 +70,40 @@ func (env *Env) UserSavePositionPost(w http.ResponseWriter, r *http.Request) {
 
 	env.logger.LogRequestSuccess(r)
 	w.Write(common.GetEmptyJson())
+}
+
+// TODO add tests
+func (env *Env) UserGetPositionById(w http.ResponseWriter, r *http.Request) {
+	var vars = mux.Vars(r)
+	var neighbourIdStr = vars[id]
+	var neighbourId, neighbourIdErr = strconv.Atoi(neighbourIdStr)
+	if neighbourIdErr != nil {
+		env.logger.LogRequestError(r, neighbourIdErr)
+		w.WriteHeader(http.StatusNotFound)
+		w.Write(common.GetErrorJson(neighbourIdErr))
+		return
+	}
+
+	env.logger.LogRequestStart(r)
+	var _, idCode, userIdErr = env.getIdFromRequest(r)
+	if userIdErr != nil {
+		env.logger.LogRequestError(r, userIdErr)
+		w.WriteHeader(idCode)
+		w.Write(common.GetErrorJson(userIdErr))
+		return
+	}
+
+	// todo check if current user has submitted request to requested user
+	var neighbour, nErr = env.positionDAO.GetUserPositionById(neighbourId)
+	if nErr != nil {
+		env.logger.LogRequestError(r, nErr)	// TODO handle user not found case
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(common.GetErrorJson(nErr))
+		return
+	}
+
+	env.logger.LogRequestSuccess(r)
+	w.Write(common.GetDataJson(neighbour))
 }
 
 func parsePosition(r *http.Request) (*model.Position, int, error) {
