@@ -11,9 +11,9 @@ const (
 		WHERE requesterId = $1 AND requestedId = $2 AND status = 'PENDING'
 	`
 	getPendingRequests = `
-		SELECT mr.id, mr.requesterId, mr.requestedId, mr.status, mr.time FROM MeetRequest mr
-			JOIN Users u ON mr.requesterId = u.id
-			JOIN Position p ON p.userId = u.id
+		SELECT mr.id, mr.requesterId, u1.login, mr.requestedId, u2.login, mr.status, mr.time FROM MeetRequest mr
+			JOIN Users u1 ON mr.requesterId = u1.id
+			JOIN Users u2 ON mr.requestedId = u2.id
 		WHERE mr.requestedId = $1 AND status = 'PENDING'
 	`
 	checkAccessibility = `
@@ -180,7 +180,15 @@ func (dao *meetRequestDAO) getPendingRequests(requestedId int) ([]*model.MeetReq
 	var result = make([]*model.MeetRequest, 0)
 	for rows.Next() {
 		var request = new(model.MeetRequest)
-		err = rows.Scan(&request.Id, &request.RequesterId, &request.RequestedId, &request.Status, &request.Time)
+		err = rows.Scan(
+			&request.Id,
+			&request.RequesterId,
+			&request.RequesterLogin,
+			&request.RequestedId,
+			&request.RequestedLogin,
+			&request.Status,
+			&request.Time,
+		)
 		if err != nil {
 			return nil, err
 		}

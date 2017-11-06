@@ -513,13 +513,19 @@ definitions:
         description: id запроса
         example: 1234
       requester_id:
-        type: string
+        type: integer
         description: id пользователя, пославшего запрос
         example: 123
-      requested_id:
+      requester_login:
         type: string
+        description: login пользователя, пославшего запрос
+      requested_id:
+        type: integer
         description: id пользователя, которому запрос послан
         example: 321
+      requested_login:
+        type: string
+        description: login пользователя, которому запрос послан
       time:
         type: string
         description: время отметки в формате "YYYY-MM-DDTHH:MM:SS"
