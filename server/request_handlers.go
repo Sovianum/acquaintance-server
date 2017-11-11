@@ -64,25 +64,22 @@ func (env *Env) CreateRequest(w http.ResponseWriter, r *http.Request) {
 	w.Write(common.GetEmptyJson())
 }
 
-func (env *Env) GetRequests(w http.ResponseWriter, r *http.Request) {
-	env.logger.LogRequestStart(r)
-	var userId, tokenCode, tokenErr = env.getIdFromRequest(r)
-	if tokenErr != nil {
-		env.logger.LogRequestError(r, tokenErr)
-		w.WriteHeader(tokenCode)
-		w.Write(common.GetErrorJson(tokenErr))
-		return
-	}
-	var requests, requestsErr = env.meetRequestDAO.GetRequests(userId)
-	if requestsErr != nil {
-		env.logger.LogRequestError(r, requestsErr)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(common.GetErrorJson(requestsErr))
-		return
-	}
+func (env *Env) GetOutcomePendingRequests(w http.ResponseWriter, r *http.Request) {
+	env.getRequestsTemplate(func(userId int, dao dao.MeetRequestDAO) ([]*model.MeetRequest, error) {
+		return dao.GetOutcomePendingRequests(userId)
+	}, w, r)
+}
 
-	env.logger.LogRequestSuccess(r)
-	w.Write(common.GetDataJson(requests))
+func (env *Env) GetIncomePendingRequests(w http.ResponseWriter, r *http.Request) {
+	env.getRequestsTemplate(func(userId int, dao dao.MeetRequestDAO) ([]*model.MeetRequest, error) {
+		return dao.GetIncomePendingRequests(userId)
+	}, w, r)
+}
+
+func (env *Env) GetRequests(w http.ResponseWriter, r *http.Request) {
+	env.getRequestsTemplate(func(userId int, dao dao.MeetRequestDAO) ([]*model.MeetRequest, error) {
+		return dao.GetAllRequests(userId)
+	}, w, r)
 }
 
 func (env *Env) UpdateRequest(w http.ResponseWriter, r *http.Request) {
@@ -166,6 +163,31 @@ func (env *Env) GetNewRequestsEvents(w http.ResponseWriter, r *http.Request) {
 
 	env.logger.LogRequestSuccess(r)
 	w.Write(common.GetDataJson(newRequestData))
+}
+
+func (env *Env) getRequestsTemplate(
+	daoFunc func(userId int, dao dao.MeetRequestDAO) ([]*model.MeetRequest, error),
+	w http.ResponseWriter,
+	r *http.Request,
+) {
+	env.logger.LogRequestStart(r)
+	var userId, tokenCode, tokenErr = env.getIdFromRequest(r)
+	if tokenErr != nil {
+		env.logger.LogRequestError(r, tokenErr)
+		w.WriteHeader(tokenCode)
+		w.Write(common.GetErrorJson(tokenErr))
+		return
+	}
+	var requests, requestsErr = daoFunc(userId, env.meetRequestDAO)
+	if requestsErr != nil {
+		env.logger.LogRequestError(r, requestsErr)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(common.GetErrorJson(requestsErr))
+		return
+	}
+
+	env.logger.LogRequestSuccess(r)
+	w.Write(common.GetDataJson(requests))
 }
 
 func (env *Env) rollBackCache(requestId int, userId int) {

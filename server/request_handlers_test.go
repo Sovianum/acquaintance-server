@@ -154,7 +154,7 @@ func TestEnv_GetRequests_Success(t *testing.T) {
 	assert.Nil(t, recErr)
 	assert.Equal(t, http.StatusOK, rec.Code)
 
-	var requests, _ = env.meetRequestDAO.GetRequests(1)
+	var requests, _ = env.meetRequestDAO.GetAllRequests(1)
 	var gotRequests = make(map[string][]model.MeetRequest)
 	var jsonErr = json.Unmarshal(rec.Body.Bytes(), &gotRequests)
 
@@ -181,7 +181,7 @@ func TestEnv_GetRequests_Empty(t *testing.T) {
 	assert.Nil(t, recErr)
 	assert.Equal(t, http.StatusOK, rec.Code)
 
-	var requests, _ = env.meetRequestDAO.GetRequests(1)
+	var requests, _ = env.meetRequestDAO.GetAllRequests(1)
 	var gotRequests = make(map[string][]model.MeetRequest)
 	var jsonErr = json.Unmarshal(rec.Body.Bytes(), &gotRequests)
 

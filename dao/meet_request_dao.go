@@ -11,11 +11,17 @@ const (
 		SELECT count(*) FROM MeetRequest
 		WHERE requesterId = $1 AND requestedId = $2 AND status = 'PENDING'
 	`
-	getPendingRequests = `
+	getIncomePendingRequests = `
 		SELECT mr.id, mr.requesterId, u1.login, mr.requestedId, u2.login, mr.status, mr.time FROM MeetRequest mr
 			JOIN Users u1 ON mr.requesterId = u1.id
 			JOIN Users u2 ON mr.requestedId = u2.id
 		WHERE mr.requestedId = $1 AND status = 'PENDING'
+	`
+	getOutcomePendingRequests = `
+		SELECT mr.id, mr.requesterId, u1.login, mr.requestedId, u2.login, mr.status, mr.time FROM MeetRequest mr
+			JOIN Users u1 ON mr.requesterId = u1.id
+			JOIN Users u2 ON mr.requestedId = u2.id
+		WHERE mr.requesterId = $1 AND status = 'PENDING'
 	`
 	getAllRequests = `
 		SELECT mr.id, mr.requesterId, u1.login, mr.requestedId, u2.login, mr.status, mr.time FROM MeetRequest mr
@@ -79,7 +85,9 @@ func GetLogicalError(code int) error {
 
 type MeetRequestDAO interface {
 	CreateRequest(requesterId int, requestedId int, requestTimeoutMin int, maxDistance float64) (id int, dbErr error)
-	GetRequests(requestedId int) ([]*model.MeetRequest, error)
+	GetAllRequests(userId int) ([]*model.MeetRequest, error)
+	GetIncomePendingRequests(requestedId int) ([]*model.MeetRequest, error)
+	GetOutcomePendingRequests(requesterId int) ([]*model.MeetRequest, error)
 	GetRequestById(id int) (*model.MeetRequest, error)
 	UpdateRequest(id int, requestedId int, status string) (int, error)
 	DeclineAll(timeoutMin int) error
@@ -104,12 +112,16 @@ func (dao *meetRequestDAO) GetRequestById(id int) (*model.MeetRequest, error) {
 	return r, nil
 }
 
-//func (dao *meetRequestDAO) GetRequests(requestedId int) ([]*model.MeetRequest, error) {
-//	return dao.getPendingRequests(requestedId)
-//}
+func (dao *meetRequestDAO) GetAllRequests(userId int) ([]*model.MeetRequest, error) {
+	return dao.getRequestsTemplate(getAllRequests, userId)
+}
 
-func (dao *meetRequestDAO) GetRequests(userId int) ([]*model.MeetRequest, error) {
-	return dao.getAllRequests(userId)
+func (dao *meetRequestDAO) GetIncomePendingRequests(userId int) ([]*model.MeetRequest, error) {
+	return dao.getRequestsTemplate(getIncomePendingRequests, userId)
+}
+
+func (dao *meetRequestDAO) GetOutcomePendingRequests(userId int) ([]*model.MeetRequest, error) {
+	return dao.getRequestsTemplate(getOutcomePendingRequests, userId)
 }
 
 func (dao *meetRequestDAO) CreateRequest(requesterId int, requestedId int, requestTimeoutMin int, maxDistance float64) (int, error) {
@@ -199,40 +211,8 @@ func (dao *meetRequestDAO) createRequest(requesterId int, requestedId int) error
 	return err
 }
 
-func (dao *meetRequestDAO) getPendingRequests(requestedId int) ([]*model.MeetRequest, error) {
-	var rows, err = dao.db.Query(getPendingRequests, requestedId)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var result = make([]*model.MeetRequest, 0)
-	for rows.Next() {
-		var request = new(model.MeetRequest)
-		err = rows.Scan(
-			&request.Id,
-			&request.RequesterId,
-			&request.RequesterLogin,
-			&request.RequestedId,
-			&request.RequestedLogin,
-			&request.Status,
-			&request.Time,
-		)
-		if err != nil {
-			return nil, err
-		}
-		result = append(result, request)
-	}
-
-	err = rows.Err()
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
-}
-
-func (dao *meetRequestDAO) getAllRequests(userId int) ([]*model.MeetRequest, error) {
-	var rows, err = dao.db.Query(getAllRequests, userId)
+func (dao *meetRequestDAO) getRequestsTemplate(sql string, userId int) ([]*model.MeetRequest, error) {
+	var rows, err = dao.db.Query(sql, userId)
 	if err != nil {
 		return nil, err
 	}

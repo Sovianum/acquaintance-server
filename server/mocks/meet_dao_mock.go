@@ -69,11 +69,19 @@ var getPendingRequestByIdNotFound getPendingRequestByIdFuncType = func(id int) (
 
 type MeetRequestDAOMockSuccess struct{}
 
+func (*MeetRequestDAOMockSuccess) GetIncomePendingRequests(requestedId int) ([]*model.MeetRequest, error) {
+	panic("implement me")
+}
+
+func (*MeetRequestDAOMockSuccess) GetOutcomePendingRequests(requesterId int) ([]*model.MeetRequest, error) {
+	panic("implement me")
+}
+
 func (*MeetRequestDAOMockSuccess) CreateRequest(requesterId int, requestedId int, requestTimeoutMin int, maxDistance float64) (code int, dbErr error) {
 	return createRequestSuccess(requesterId, requestedId, requestTimeoutMin, maxDistance)
 }
 
-func (*MeetRequestDAOMockSuccess) GetRequests(requestedId int) ([]*model.MeetRequest, error) {
+func (*MeetRequestDAOMockSuccess) GetAllRequests(requestedId int) ([]*model.MeetRequest, error) {
 	return getRequestsSuccess(requestedId)
 }
 
@@ -89,11 +97,19 @@ func (*MeetRequestDAOMockSuccess) DeclineAll(timeoutMin int) error { return nil 
 
 type MeetRequestDAOMockCreateConflict struct{}
 
+func (*MeetRequestDAOMockCreateConflict) GetIncomePendingRequests(requestedId int) ([]*model.MeetRequest, error) {
+	panic("implement me")
+}
+
+func (*MeetRequestDAOMockCreateConflict) GetOutcomePendingRequests(requesterId int) ([]*model.MeetRequest, error) {
+	panic("implement me")
+}
+
 func (*MeetRequestDAOMockCreateConflict) CreateRequest(requesterId int, requestedId int, requestTimeoutMin int, maxDistance float64) (code int, dbErr error) {
 	return createRequestConflict(requesterId, requestedId, requestTimeoutMin, maxDistance)
 }
 
-func (*MeetRequestDAOMockCreateConflict) GetRequests(requestedId int) ([]*model.MeetRequest, error) {
+func (*MeetRequestDAOMockCreateConflict) GetAllRequests(requestedId int) ([]*model.MeetRequest, error) {
 	return getRequestsSuccess(requestedId)
 }
 
@@ -109,11 +125,19 @@ func (*MeetRequestDAOMockCreateConflict) DeclineAll(timeoutMin int) error { retu
 
 type MeetRequestDAOMockCreateError struct{}
 
+func (*MeetRequestDAOMockCreateError) GetIncomePendingRequests(requestedId int) ([]*model.MeetRequest, error) {
+	panic("implement me")
+}
+
+func (*MeetRequestDAOMockCreateError) GetOutcomePendingRequests(requesterId int) ([]*model.MeetRequest, error) {
+	panic("implement me")
+}
+
 func (*MeetRequestDAOMockCreateError) CreateRequest(requesterId int, requestedId int, requestTimeoutMin int, maxDistance float64) (code int, dbErr error) {
 	return createRequestError(requesterId, requestedId, requestTimeoutMin, maxDistance)
 }
 
-func (*MeetRequestDAOMockCreateError) GetRequests(requestedId int) ([]*model.MeetRequest, error) {
+func (*MeetRequestDAOMockCreateError) GetAllRequests(requestedId int) ([]*model.MeetRequest, error) {
 	return getRequestsSuccess(requestedId)
 }
 
@@ -129,11 +153,19 @@ func (*MeetRequestDAOMockCreateError) DeclineAll(timeoutMin int) error { return 
 
 type MeetRequestDAOMockGetRequestsEmpty struct{}
 
+func (*MeetRequestDAOMockGetRequestsEmpty) GetIncomePendingRequests(requestedId int) ([]*model.MeetRequest, error) {
+	panic("implement me")
+}
+
+func (*MeetRequestDAOMockGetRequestsEmpty) GetOutcomePendingRequests(requesterId int) ([]*model.MeetRequest, error) {
+	panic("implement me")
+}
+
 func (*MeetRequestDAOMockGetRequestsEmpty) CreateRequest(requesterId int, requestedId int, requestTimeoutMin int, maxDistance float64) (code int, dbErr error) {
 	return createRequestSuccess(requesterId, requestedId, requestTimeoutMin, maxDistance)
 }
 
-func (*MeetRequestDAOMockGetRequestsEmpty) GetRequests(requestedId int) ([]*model.MeetRequest, error) {
+func (*MeetRequestDAOMockGetRequestsEmpty) GetAllRequests(requestedId int) ([]*model.MeetRequest, error) {
 	return getRequestsEmpty(requestedId)
 }
 
@@ -149,11 +181,19 @@ func (*MeetRequestDAOMockGetRequestsEmpty) DeclineAll(timeoutMin int) error { re
 
 type MeetRequestDAOMockGetRequestsError struct{}
 
+func (*MeetRequestDAOMockGetRequestsError) GetIncomePendingRequests(requestedId int) ([]*model.MeetRequest, error) {
+	panic("implement me")
+}
+
+func (*MeetRequestDAOMockGetRequestsError) GetOutcomePendingRequests(requesterId int) ([]*model.MeetRequest, error) {
+	panic("implement me")
+}
+
 func (*MeetRequestDAOMockGetRequestsError) CreateRequest(requesterId int, requestedId int, requestTimeoutMin int, maxDistance float64) (code int, dbErr error) {
 	return createRequestSuccess(requesterId, requestedId, requestTimeoutMin, maxDistance)
 }
 
-func (*MeetRequestDAOMockGetRequestsError) GetRequests(requestedId int) ([]*model.MeetRequest, error) {
+func (*MeetRequestDAOMockGetRequestsError) GetAllRequests(requestedId int) ([]*model.MeetRequest, error) {
 	return getRequestsError(requestedId)
 }
 
@@ -169,11 +209,19 @@ func (*MeetRequestDAOMockGetRequestsError) DeclineAll(timeoutMin int) error { re
 
 type MeetRequestDAOMockUpdateNoRequest struct{}
 
+func (*MeetRequestDAOMockUpdateNoRequest) GetIncomePendingRequests(requestedId int) ([]*model.MeetRequest, error) {
+	panic("implement me")
+}
+
+func (*MeetRequestDAOMockUpdateNoRequest) GetOutcomePendingRequests(requesterId int) ([]*model.MeetRequest, error) {
+	panic("implement me")
+}
+
 func (*MeetRequestDAOMockUpdateNoRequest) CreateRequest(requesterId int, requestedId int, requestTimeoutMin int, maxDistance float64) (code int, dbErr error) {
 	return createRequestSuccess(requesterId, requestedId, requestTimeoutMin, maxDistance)
 }
 
-func (*MeetRequestDAOMockUpdateNoRequest) GetRequests(requestedId int) ([]*model.MeetRequest, error) {
+func (*MeetRequestDAOMockUpdateNoRequest) GetAllRequests(requestedId int) ([]*model.MeetRequest, error) {
 	return getRequestsSuccess(requestedId)
 }
 
@@ -189,11 +237,19 @@ func (*MeetRequestDAOMockUpdateNoRequest) DeclineAll(timeoutMin int) error { ret
 
 type MeetRequestDAOMockUpdateError struct{}
 
+func (*MeetRequestDAOMockUpdateError) GetIncomePendingRequests(requestedId int) ([]*model.MeetRequest, error) {
+	panic("implement me")
+}
+
+func (*MeetRequestDAOMockUpdateError) GetOutcomePendingRequests(requesterId int) ([]*model.MeetRequest, error) {
+	panic("implement me")
+}
+
 func (*MeetRequestDAOMockUpdateError) CreateRequest(requesterId int, requestedId int, requestTimeoutMin int, maxDistance float64) (code int, dbErr error) {
 	return createRequestSuccess(requesterId, requestedId, requestTimeoutMin, maxDistance)
 }
 
-func (*MeetRequestDAOMockUpdateError) GetRequests(requestedId int) ([]*model.MeetRequest, error) {
+func (*MeetRequestDAOMockUpdateError) GetAllRequests(requestedId int) ([]*model.MeetRequest, error) {
 	return getRequestsSuccess(requestedId)
 }
 
@@ -209,11 +265,19 @@ func (*MeetRequestDAOMockUpdateError) DeclineAll(timeoutMin int) error { return 
 
 type MeetRequestDAOMockGetRequestByIdNotFound struct{}
 
+func (*MeetRequestDAOMockGetRequestByIdNotFound) GetIncomePendingRequests(requestedId int) ([]*model.MeetRequest, error) {
+	panic("implement me")
+}
+
+func (*MeetRequestDAOMockGetRequestByIdNotFound) GetOutcomePendingRequests(requesterId int) ([]*model.MeetRequest, error) {
+	panic("implement me")
+}
+
 func (*MeetRequestDAOMockGetRequestByIdNotFound) CreateRequest(requesterId int, requestedId int, requestTimeoutMin int, maxDistance float64) (code int, dbErr error) {
 	return createRequestSuccess(requesterId, requestedId, requestTimeoutMin, maxDistance)
 }
 
-func (*MeetRequestDAOMockGetRequestByIdNotFound) GetRequests(requestedId int) ([]*model.MeetRequest, error) {
+func (*MeetRequestDAOMockGetRequestByIdNotFound) GetAllRequests(requestedId int) ([]*model.MeetRequest, error) {
 	return getRequestsSuccess(requestedId)
 }
 

@@ -94,7 +94,7 @@ func TestMeetRequestDAO_GetRequests_Success(t *testing.T) {
 	}
 
 	var meetRequestDAO = NewMeetDAO(db)
-	var dbRequestRequests, dbErr = meetRequestDAO.GetRequests(1)
+	var dbRequestRequests, dbErr = meetRequestDAO.GetAllRequests(1)
 
 	assert.Nil(t, dbErr)
 	assert.Equal(t, 1, len(dbRequestRequests))
@@ -117,7 +117,7 @@ func TestMeetRequestDAO_GetRequests_Empty(t *testing.T) {
 		)
 
 	var meetRequestDAO = NewMeetDAO(db)
-	var dbRequestRequests, dbErr = meetRequestDAO.GetRequests(1)
+	var dbRequestRequests, dbErr = meetRequestDAO.GetAllRequests(1)
 
 	assert.Nil(t, dbErr)
 	assert.Equal(t, 0, len(dbRequestRequests))
@@ -137,7 +137,7 @@ func TestMeetRequestDAO_GetRequests_DBErr(t *testing.T) {
 		WillReturnError(errors.New("fail"))
 
 	var meetRequestDAO = NewMeetDAO(db)
-	var _, dbErr = meetRequestDAO.GetRequests(1)
+	var _, dbErr = meetRequestDAO.GetAllRequests(1)
 
 	assert.NotNil(t, dbErr)
 	assert.Equal(t, "fail", dbErr.Error())

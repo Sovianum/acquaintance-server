@@ -15,6 +15,8 @@ func GetRouter(env *Env) *mux.Router {
 	router.HandleFunc("/api/v1/user/position/neighbour/{id}", env.UserGetPositionById).Methods(http.MethodGet)
 	router.HandleFunc("/api/v1/user/request/create", env.CreateRequest).Methods(http.MethodPost)
 	router.HandleFunc("/api/v1/user/request/all", env.GetRequests).Methods(http.MethodGet)
+	router.HandleFunc("/api/v1/user/request/income/pending", env.GetIncomePendingRequests).Methods(http.MethodGet)
+	router.HandleFunc("/api/v1/user/request/outcome/pending", env.GetOutcomePendingRequests).Methods(http.MethodGet)
 	router.HandleFunc("/api/v1/user/request/update", env.UpdateRequest).Methods(http.MethodPost)
 	router.HandleFunc("/api/v1/user/request/new", env.GetNewRequestsEvents).Methods(http.MethodGet)
 
