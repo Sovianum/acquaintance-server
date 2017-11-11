@@ -99,6 +99,7 @@ func (env *Env) UserSignInPost(w http.ResponseWriter, r *http.Request) {
 
 	var dbUser, dbErr = env.userDAO.GetUserByLogin(user.Login)
 	if dbErr != nil {
+		env.logger.LogRequestError(r, dbErr)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write(common.GetErrorJson(dbErr))
 		return
@@ -122,6 +123,43 @@ func (env *Env) UserSignInPost(w http.ResponseWriter, r *http.Request) {
 
 	env.logger.LogRequestSuccess(r)
 	w.Write(common.GetDataJson(tokenString))
+}
+
+func (env *Env) UserGetSelfInfo(w http.ResponseWriter, r *http.Request) {
+	env.logger.LogRequestStart(r)
+	var user, code, parseErr = parseUser(r)
+	if parseErr != nil {
+		env.logger.LogRequestError(r, parseErr)
+		w.WriteHeader(code)
+		w.Write(common.GetErrorJson(parseErr))
+		return
+	}
+
+	var exists, existsErr = env.userDAO.ExistsByLogin(user.Login)
+	if existsErr != nil {
+		env.logger.LogRequestError(r, existsErr)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(common.GetErrorJson(existsErr))
+		return
+	}
+	if !exists {
+		var err = errors.New("not found")
+		env.logger.LogRequestError(r, err)
+		w.WriteHeader(http.StatusNotFound)
+		w.Write(common.GetErrorJson(err))
+		return
+	}
+
+	var dbUser, dbErr = env.userDAO.GetUserByLogin(user.Login)
+	if dbErr != nil {
+		env.logger.LogRequestError(r, dbErr)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(common.GetErrorJson(dbErr))
+		return
+	}
+
+	env.logger.LogRequestSuccess(r)
+	w.Write(common.GetDataJson(dbUser))
 }
 
 func (env *Env) generateTokenString(id int, login string) (string, error) {

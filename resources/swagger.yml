@@ -113,6 +113,48 @@ paths:
                 err_msg: сервер упал
               }
 
+  /api/v1/user/self:
+      get:
+        summary:
+          Получить информацию о самом себе
+        parameters:
+          - name: Authorization
+            in: header
+            description: авторизационный токен
+            required: true
+            type: string
+        responses:
+          200:
+            description:
+              данные успешно получены
+            schema:
+              type: object
+              description: информация о себе
+              example:
+                {
+                  "data": $ref: '#/definitions/User'
+                }
+          400:
+            description:
+              проблема с авторизационным токеном
+            schema:
+              type: object
+              description: ответ с ошибкой
+              example:
+                {
+                  err_msg: плохой запрос
+                }
+          500:
+            description:
+              ошибка на сервере
+            schema:
+              type: object
+              description: ответ с ошибкой
+              example:
+                {
+                  err_msg: сервер упал
+                }
+
   /api/v1/user/position/save:
     post:
       summary:
