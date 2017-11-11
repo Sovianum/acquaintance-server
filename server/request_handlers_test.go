@@ -155,13 +155,13 @@ func TestEnv_GetRequests_Success(t *testing.T) {
 	assert.Equal(t, http.StatusOK, rec.Code)
 
 	var requests, _ = env.meetRequestDAO.GetRequests(1)
-	var gotRequests = make([]*model.MeetRequest, 0)
+	var gotRequests = make(map[string][]model.MeetRequest)
 	var jsonErr = json.Unmarshal(rec.Body.Bytes(), &gotRequests)
 
 	assert.Nil(t, jsonErr)
-	assert.Equal(t, len(requests), len(gotRequests))
+	assert.Equal(t, len(requests), len(gotRequests["data"]))
 	for i := range requests {
-		assert.Equal(t, *requests[i], *gotRequests[i])
+		assert.Equal(t, *requests[i], gotRequests["data"][i])
 	}
 }
 
@@ -182,13 +182,13 @@ func TestEnv_GetRequests_Empty(t *testing.T) {
 	assert.Equal(t, http.StatusOK, rec.Code)
 
 	var requests, _ = env.meetRequestDAO.GetRequests(1)
-	var gotRequests = make([]*model.MeetRequest, 0)
+	var gotRequests = make(map[string][]model.MeetRequest)
 	var jsonErr = json.Unmarshal(rec.Body.Bytes(), &gotRequests)
 
 	assert.Nil(t, jsonErr)
-	assert.Equal(t, len(requests), len(gotRequests))
+	assert.Equal(t, len(requests), len(gotRequests["data"]))
 	for i := range requests {
-		assert.Equal(t, *requests[i], *gotRequests[i])
+		assert.Equal(t, *requests[i], gotRequests["data"][i])
 	}
 }
 

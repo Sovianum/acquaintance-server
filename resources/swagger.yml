@@ -184,10 +184,12 @@ paths:
           description:
             данные успешно получены
           schema:
-            type: array
+            type: object
             description: гео-метки ближайших пользователей
-            items:
-              $ref: '#/definitions/Position'
+            example:
+              {
+                "data": [$ref: '#/definitions/Position']
+              }
         400:
           description:
             проблема с авторизационным токеном
@@ -299,9 +301,12 @@ paths:
             description:
               запросы успешно получены
             schema:
-              type: array
-              items:
-                $ref: '#/definitions/MeetRequest'
+              type: object
+              example:
+                {
+                  "data": [$ref: '#/definitions/MeetRequest']
+                }
+
           400:
             description:
               плохой запрос

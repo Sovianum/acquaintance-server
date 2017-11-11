@@ -79,16 +79,8 @@ func (env *Env) GetRequests(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var msg, msgErr = json.Marshal(requests)
-	if msgErr != nil {
-		env.logger.LogRequestError(r, msgErr)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(common.GetErrorJson(msgErr))
-		return
-	}
-
 	env.logger.LogRequestSuccess(r)
-	w.Write(msg)
+	w.Write(common.GetDataJson(requests))
 }
 
 func (env *Env) UpdateRequest(w http.ResponseWriter, r *http.Request) {
