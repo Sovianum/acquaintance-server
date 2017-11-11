@@ -10,11 +10,11 @@ const (
 	getUserById       = `SELECT id, login, password, age, sex, about FROM Users WHERE id = $1`
 	getUserByLogin    = `SELECT id, login, password, age, sex, about FROM Users WHERE login = $1`
 	getIdByLogin      = `SELECT id FROM Users WHERE login = $1`
-	getNeighbourUsers = `SELECT u2.id, u2.login, u2.age, u2.sex, u2.about
+	getNeighbourUsers = `SELECT DISTINCT ON (u2.id) u2.id, u2.login, u2.age, u2.sex, u2.about
 						 FROM Users u1
 						 	JOIN Users u2 ON u2.id != u1.id
-						 	JOIN Position p1 ON u1.id = p1.id
-						 	JOIN Position p2 ON u2.id = p2.id
+						 	JOIN Position p1 ON u1.id = p1.userId
+						 	JOIN Position p2 ON u2.id = p2.userId
 						 WHERE u1.id = $1
 							AND ST_DistanceSphere(p1.point, p2.point) <= $2
 							AND age(current_timestamp, p2.time) < $3 * interval '1 minute'`

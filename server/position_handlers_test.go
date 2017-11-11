@@ -32,7 +32,7 @@ func TestEnv_UserGetNeighboursGet_Success(t *testing.T) {
 
 	// mock user extraction
 	mock.
-		ExpectQuery("SELECT u2").
+		ExpectQuery("SELECT DISTINCT").
 		WithArgs(1, distance, onlineTimeout).
 		WillReturnRows(
 			sqlmock.NewRows([]string{"id", "login", "age", "sex", "about"}).
