@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"github.com/Sovianum/acquaintance-server/mylog"
 )
 
 const (
@@ -20,7 +21,7 @@ const (
 
 func (env *Env) CreateRequest(w http.ResponseWriter, r *http.Request) {
 	env.logger.LogRequestStart(r)
-	var meetRequest, parseCode, parseErr = parseRequest(r)
+	var meetRequest, parseCode, parseErr = parseRequest(r, env.logger)
 	if parseErr != nil {
 		env.logger.LogRequestError(r, parseErr)
 		w.WriteHeader(parseCode)
@@ -45,9 +46,10 @@ func (env *Env) CreateRequest(w http.ResponseWriter, r *http.Request) {
 		w.Write(common.GetErrorJson(dbErr))
 		return
 	}
-	if requestId == dao.ImpossibleID {
+	if dao.IsInvalidId(requestId) {
+		env.logger.LogRequestError(r, dao.GetLogicalError(requestId))
 		w.WriteHeader(http.StatusForbidden)
-		w.Write(common.GetEmptyJson())
+		w.Write(common.GetErrorJson(dao.GetLogicalError(requestId)))
 		return
 	}
 	var code, err = env.handleRequestPending(requestId, userId)
@@ -271,7 +273,7 @@ func parseRequestUpdate(r *http.Request) (*model.MeetRequestUpdate, int, error) 
 	return update, http.StatusOK, nil
 }
 
-func parseRequest(r *http.Request) (*model.MeetRequest, int, error) {
+func parseRequest(r *http.Request, logger *mylog.Logger) (*model.MeetRequest, int, error) {
 	var body, err = ioutil.ReadAll(r.Body)
 	if err != nil {
 		return nil, http.StatusBadRequest, err
@@ -280,6 +282,8 @@ func parseRequest(r *http.Request) (*model.MeetRequest, int, error) {
 	if err := r.Body.Close(); err != nil {
 		return nil, http.StatusInternalServerError, err
 	}
+
+	logger.LogRequestBody(r, string(body))
 
 	var request = new(model.MeetRequest)
 

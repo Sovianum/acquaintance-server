@@ -191,7 +191,7 @@ func TestMeetRequestDAO_CreateRequest(t *testing.T) {
 
 			createErrIsNil: true,
 
-			expectedId: ImpossibleID,
+			expectedId: RequestExists,
 		},
 		{
 			requesterId:       1,
@@ -221,7 +221,7 @@ func TestMeetRequestDAO_CreateRequest(t *testing.T) {
 
 			createErrIsNil: true,
 
-			expectedId: ImpossibleID,
+			expectedId: UserInaccessible,
 		},
 		{
 			requesterId:       1,

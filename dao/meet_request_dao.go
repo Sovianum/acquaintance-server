@@ -3,6 +3,7 @@ package dao
 import (
 	"database/sql"
 	"github.com/Sovianum/acquaintance-server/model"
+	"fmt"
 )
 
 const (
@@ -49,8 +50,26 @@ const (
 )
 
 const (
-	ImpossibleID = -1
+	ImpossibleID = -1 - iota
+	RequestExists
+	UserInaccessible
+
 )
+
+func IsInvalidId(id int) bool {
+	return id < 0
+}
+
+func GetLogicalError(code int) error {
+	switch code {
+	case RequestExists:
+		return fmt.Errorf("request already exists")
+	case UserInaccessible:
+		return fmt.Errorf("user inaccessible")
+	default:
+		return fmt.Errorf("unknown error with code %d", code)
+	}
+}
 
 type MeetRequestDAO interface {
 	CreateRequest(requesterId int, requestedId int, requestTimeoutMin int, maxDistance float64) (id int, dbErr error)
@@ -90,7 +109,7 @@ func (dao *meetRequestDAO) CreateRequest(requesterId int, requestedId int, reque
 	}
 
 	if requestCnt > 0 {
-		return ImpossibleID, nil
+		return RequestExists, nil
 	}
 
 	var accessible, accessErr = dao.isAccessible(requesterId, requestedId, maxDistance, requestTimeoutMin)
@@ -99,7 +118,7 @@ func (dao *meetRequestDAO) CreateRequest(requesterId int, requestedId int, reque
 	}
 
 	if !accessible {
-		return ImpossibleID, nil
+		return UserInaccessible, nil
 	}
 
 	var tx, txError = dao.db.Begin()

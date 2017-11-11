@@ -9,6 +9,7 @@ import (
 const (
 	requestStartLogTemplate   = `Started handling request to url %v with method %v`
 	requestSuccessLogTemplate = `Request to url %v with method %v handled successfully`
+	requestBodyTemplate = "Request to url %v with method %v has body %v"
 	requestErrorTemplate      = `Failed on URL %v with error \"%v\"`
 )
 
@@ -31,6 +32,10 @@ func NewLogger(writer io.Writer) *Logger {
 
 type Logger struct {
 	golog.Logger
+}
+
+func (logger *Logger) LogRequestBody(r *http.Request, body string) {
+	logger.Infof(requestBodyTemplate, r.URL.Path, r.Method, body)
 }
 
 func (logger *Logger) LogRequestStart(r *http.Request) {
