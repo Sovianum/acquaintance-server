@@ -116,12 +116,12 @@ func (dao *meetRequestDAO) GetAllRequests(userId int) ([]*model.MeetRequest, err
 	return dao.getRequestsTemplate(getAllRequests, userId)
 }
 
-func (dao *meetRequestDAO) GetIncomePendingRequests(userId int) ([]*model.MeetRequest, error) {
-	return dao.getRequestsTemplate(getIncomePendingRequests, userId)
+func (dao *meetRequestDAO) GetIncomePendingRequests(requestedId int) ([]*model.MeetRequest, error) {
+	return dao.getRequestsTemplate(getIncomePendingRequests, requestedId)
 }
 
-func (dao *meetRequestDAO) GetOutcomePendingRequests(userId int) ([]*model.MeetRequest, error) {
-	return dao.getRequestsTemplate(getOutcomePendingRequests, userId)
+func (dao *meetRequestDAO) GetOutcomePendingRequests(requesterId int) ([]*model.MeetRequest, error) {
+	return dao.getRequestsTemplate(getOutcomePendingRequests, requesterId)
 }
 
 func (dao *meetRequestDAO) CreateRequest(requesterId int, requestedId int, requestTimeoutMin int, maxDistance float64) (int, error) {

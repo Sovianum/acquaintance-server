@@ -23,7 +23,7 @@ func (env *Env) UserRegisterPost(w http.ResponseWriter, r *http.Request) {
 	if parseErr != nil {
 		env.logger.LogRequestError(r, parseErr)
 		w.WriteHeader(code)
-		w.Write(common.GetErrorJson(parseErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(parseErr), env.logger)
 		return
 	}
 
@@ -31,14 +31,14 @@ func (env *Env) UserRegisterPost(w http.ResponseWriter, r *http.Request) {
 	if existsErr != nil {
 		env.logger.LogRequestError(r, existsErr)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(common.GetErrorJson(existsErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(existsErr), env.logger)
 		return
 	}
 	if exists {
 		var err = errors.New("user already exists")
 		env.logger.LogRequestError(r, err)
 		w.WriteHeader(http.StatusConflict)
-		w.Write(common.GetErrorJson(err))
+		common.WriteWithLogging(r, w, common.GetErrorJson(err), env.logger)
 		return
 	}
 
@@ -46,7 +46,7 @@ func (env *Env) UserRegisterPost(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		env.logger.LogRequestError(r, err)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(common.GetErrorJson(err))
+		common.WriteWithLogging(r, w, common.GetErrorJson(err), env.logger)
 		return
 	}
 	user.Password = string(hash)
@@ -55,7 +55,7 @@ func (env *Env) UserRegisterPost(w http.ResponseWriter, r *http.Request) {
 	if saveErr != nil {
 		env.logger.LogRequestError(r, saveErr)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(common.GetErrorJson(saveErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(saveErr), env.logger)
 		return
 	}
 
@@ -63,13 +63,13 @@ func (env *Env) UserRegisterPost(w http.ResponseWriter, r *http.Request) {
 	if tokenErr != nil {
 		env.logger.LogRequestError(r, tokenErr)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(common.GetErrorJson(tokenErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(tokenErr), env.logger)
 		// TODO add info that user has been successfully saved
 		return
 	}
 
 	env.logger.LogRequestSuccess(r)
-	w.Write(common.GetDataJson(tokenString))
+	common.WriteWithLogging(r, w, common.GetDataJson(tokenString), env.logger)
 }
 
 func (env *Env) UserSignInPost(w http.ResponseWriter, r *http.Request) {
@@ -78,7 +78,7 @@ func (env *Env) UserSignInPost(w http.ResponseWriter, r *http.Request) {
 	if parseErr != nil {
 		env.logger.LogRequestError(r, parseErr)
 		w.WriteHeader(code)
-		w.Write(common.GetErrorJson(parseErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(parseErr), env.logger)
 		return
 	}
 
@@ -86,14 +86,14 @@ func (env *Env) UserSignInPost(w http.ResponseWriter, r *http.Request) {
 	if existsErr != nil {
 		env.logger.LogRequestError(r, existsErr)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(common.GetErrorJson(existsErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(existsErr), env.logger)
 		return
 	}
 	if !exists {
 		var err = errors.New("not found")
 		env.logger.LogRequestError(r, err)
 		w.WriteHeader(http.StatusNotFound)
-		w.Write(common.GetErrorJson(err))
+		common.WriteWithLogging(r, w, common.GetErrorJson(err), env.logger)
 		return
 	}
 
@@ -101,14 +101,14 @@ func (env *Env) UserSignInPost(w http.ResponseWriter, r *http.Request) {
 	if dbErr != nil {
 		env.logger.LogRequestError(r, dbErr)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(common.GetErrorJson(dbErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(dbErr), env.logger)
 		return
 	}
 
 	if err := env.hashValidator([]byte(user.Password), []byte(dbUser.Password)); err != nil {
 		env.logger.LogRequestError(r, err)
 		w.WriteHeader(http.StatusNotFound)
-		w.Write(common.GetErrorJson(err))
+		common.WriteWithLogging(r, w, common.GetErrorJson(err), env.logger)
 		return
 	}
 
@@ -116,13 +116,13 @@ func (env *Env) UserSignInPost(w http.ResponseWriter, r *http.Request) {
 	if tokenErr != nil {
 		env.logger.LogRequestError(r, tokenErr)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(common.GetErrorJson(tokenErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(tokenErr), env.logger)
 		// TODO add info that user has been successfully saved
 		return
 	}
 
 	env.logger.LogRequestSuccess(r)
-	w.Write(common.GetDataJson(tokenString))
+	common.WriteWithLogging(r, w, common.GetDataJson(tokenString), env.logger)
 }
 
 func (env *Env) UserGetSelfInfo(w http.ResponseWriter, r *http.Request) {
@@ -131,7 +131,7 @@ func (env *Env) UserGetSelfInfo(w http.ResponseWriter, r *http.Request) {
 	if parseErr != nil {
 		env.logger.LogRequestError(r, parseErr)
 		w.WriteHeader(code)
-		w.Write(common.GetErrorJson(parseErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(parseErr), env.logger)
 		return
 	}
 
@@ -139,14 +139,14 @@ func (env *Env) UserGetSelfInfo(w http.ResponseWriter, r *http.Request) {
 	if existsErr != nil {
 		env.logger.LogRequestError(r, existsErr)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(common.GetErrorJson(existsErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(existsErr), env.logger)
 		return
 	}
 	if !exists {
 		var err = errors.New("not found")
 		env.logger.LogRequestError(r, err)
 		w.WriteHeader(http.StatusNotFound)
-		w.Write(common.GetErrorJson(err))
+		common.WriteWithLogging(r, w, common.GetErrorJson(err), env.logger)
 		return
 	}
 
@@ -154,12 +154,12 @@ func (env *Env) UserGetSelfInfo(w http.ResponseWriter, r *http.Request) {
 	if dbErr != nil {
 		env.logger.LogRequestError(r, dbErr)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(common.GetErrorJson(dbErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(dbErr), env.logger)
 		return
 	}
 
 	env.logger.LogRequestSuccess(r)
-	w.Write(common.GetDataJson(dbUser))
+	common.WriteWithLogging(r, w, common.GetDataJson(dbUser), env.logger)
 }
 
 func (env *Env) generateTokenString(id int, login string) (string, error) {

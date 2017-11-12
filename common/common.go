@@ -1,6 +1,10 @@
 package common
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"net/http"
+	"github.com/Sovianum/acquaintance-server/mylog"
+)
 
 type ResponseMsg struct {
 	ErrMsg interface{} `json:"err_msg,omitempty"`
@@ -19,4 +23,9 @@ func GetDataJson(data interface{}) []byte {
 
 func GetEmptyJson() []byte {
 	return []byte("{}")
+}
+
+func WriteWithLogging(r *http.Request, w http.ResponseWriter, body []byte, logger *mylog.Logger) {
+	logger.LogResponseBody(r, string(body))
+	w.Write(body)
 }

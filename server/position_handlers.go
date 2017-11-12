@@ -25,7 +25,7 @@ func (env *Env) UserGetNeighboursGet(w http.ResponseWriter, r *http.Request) {
 	if idErr != nil {
 		env.logger.LogRequestError(r, idErr)
 		w.WriteHeader(idCode)
-		w.Write(common.GetErrorJson(idErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(idErr), env.logger)
 		return
 	}
 
@@ -33,12 +33,12 @@ func (env *Env) UserGetNeighboursGet(w http.ResponseWriter, r *http.Request) {
 	if nErr != nil {
 		env.logger.LogRequestError(r, nErr)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(common.GetErrorJson(nErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(nErr), env.logger)
 		return
 	}
 
 	env.logger.LogRequestSuccess(r)
-	w.Write(common.GetDataJson(neighbours))
+	common.WriteWithLogging(r, w, common.GetDataJson(neighbours), env.logger)
 }
 
 func (env *Env) UserSavePositionPost(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +47,7 @@ func (env *Env) UserSavePositionPost(w http.ResponseWriter, r *http.Request) {
 	if idErr != nil {
 		env.logger.LogRequestError(r, idErr)
 		w.WriteHeader(idCode)
-		w.Write(common.GetErrorJson(idErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(idErr), env.logger)
 		return
 	}
 
@@ -55,7 +55,7 @@ func (env *Env) UserSavePositionPost(w http.ResponseWriter, r *http.Request) {
 	if parseErr != nil {
 		env.logger.LogRequestError(r, parseErr)
 		w.WriteHeader(code)
-		w.Write(common.GetErrorJson(parseErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(parseErr), env.logger)
 		return
 	}
 	position.UserId = userId
@@ -64,12 +64,12 @@ func (env *Env) UserSavePositionPost(w http.ResponseWriter, r *http.Request) {
 	if saveErr != nil {
 		env.logger.LogRequestError(r, saveErr)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(common.GetErrorJson(saveErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(saveErr), env.logger)
 		return
 	}
 
 	env.logger.LogRequestSuccess(r)
-	w.Write(common.GetEmptyJson())
+	common.WriteWithLogging(r, w, common.GetEmptyJson(), env.logger)
 }
 
 // TODO add tests
@@ -80,7 +80,7 @@ func (env *Env) UserGetPositionById(w http.ResponseWriter, r *http.Request) {
 	if neighbourIdErr != nil {
 		env.logger.LogRequestError(r, neighbourIdErr)
 		w.WriteHeader(http.StatusNotFound)
-		w.Write(common.GetErrorJson(neighbourIdErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(neighbourIdErr), env.logger)
 		return
 	}
 
@@ -89,7 +89,7 @@ func (env *Env) UserGetPositionById(w http.ResponseWriter, r *http.Request) {
 	if userIdErr != nil {
 		env.logger.LogRequestError(r, userIdErr)
 		w.WriteHeader(idCode)
-		w.Write(common.GetErrorJson(userIdErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(userIdErr), env.logger)
 		return
 	}
 
@@ -98,12 +98,12 @@ func (env *Env) UserGetPositionById(w http.ResponseWriter, r *http.Request) {
 	if nErr != nil {
 		env.logger.LogRequestError(r, nErr)	// TODO handle user not found case
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(common.GetErrorJson(nErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(nErr), env.logger)
 		return
 	}
 
 	env.logger.LogRequestSuccess(r)
-	w.Write(common.GetDataJson(neighbour))
+	common.WriteWithLogging(r, w, common.GetDataJson(neighbour), env.logger)
 }
 
 func parsePosition(r *http.Request) (*model.Position, int, error) {

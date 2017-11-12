@@ -9,7 +9,8 @@ import (
 const (
 	requestStartLogTemplate   = `Started handling request to url %v with method %v`
 	requestSuccessLogTemplate = `Request to url %v with method %v handled successfully`
-	requestBodyTemplate = "Request to url %v with method %v has body %v"
+	requestBodyTemplate       = "Request to url %v with method %v has body %v"
+	responseBodyTemplate      = "Request to url %v with method %v has response with body %v"
 	requestErrorTemplate      = `Failed on URL %v with error \"%v\"`
 )
 
@@ -36,6 +37,10 @@ type Logger struct {
 
 func (logger *Logger) LogRequestBody(r *http.Request, body string) {
 	logger.Infof(requestBodyTemplate, r.URL.Path, r.Method, body)
+}
+
+func (logger *Logger) LogResponseBody(r *http.Request, body string) {
+	logger.Infof(responseBodyTemplate, r.URL.Path, r.Method, body)
 }
 
 func (logger *Logger) LogRequestStart(r *http.Request) {

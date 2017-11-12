@@ -25,14 +25,14 @@ func (env *Env) CreateRequest(w http.ResponseWriter, r *http.Request) {
 	if parseErr != nil {
 		env.logger.LogRequestError(r, parseErr)
 		w.WriteHeader(parseCode)
-		w.Write(common.GetErrorJson(parseErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(parseErr), env.logger)
 		return
 	}
 	var userId, tokenCode, tokenErr = env.getIdFromRequest(r)
 	if tokenErr != nil {
 		env.logger.LogRequestError(r, tokenErr)
 		w.WriteHeader(tokenCode)
-		w.Write(common.GetErrorJson(tokenErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(tokenErr), env.logger)
 		return
 	}
 	meetRequest.RequesterId = userId
@@ -43,25 +43,25 @@ func (env *Env) CreateRequest(w http.ResponseWriter, r *http.Request) {
 	if dbErr != nil {
 		env.logger.LogRequestError(r, dbErr)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(common.GetErrorJson(dbErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(dbErr), env.logger)
 		return
 	}
 	if dao.IsInvalidId(requestId) {
 		env.logger.LogRequestError(r, dao.GetLogicalError(requestId))
 		w.WriteHeader(http.StatusForbidden)
-		w.Write(common.GetErrorJson(dao.GetLogicalError(requestId)))
+		common.WriteWithLogging(r, w, common.GetErrorJson(dao.GetLogicalError(requestId)), env.logger)
 		return
 	}
 	var code, err = env.handleRequestPending(requestId, userId)
 	if err != nil {
 		env.logger.LogRequestError(r, err)
 		w.WriteHeader(code)
-		w.Write(common.GetErrorJson(err))
+		common.WriteWithLogging(r, w, common.GetErrorJson(err), env.logger)
 		return
 	}
 
 	env.logger.LogRequestSuccess(r)
-	w.Write(common.GetEmptyJson())
+	common.WriteWithLogging(r, w, common.GetEmptyJson(), env.logger)
 }
 
 func (env *Env) GetOutcomePendingRequests(w http.ResponseWriter, r *http.Request) {
@@ -88,7 +88,7 @@ func (env *Env) UpdateRequest(w http.ResponseWriter, r *http.Request) {
 	if parseErr != nil {
 		env.logger.LogRequestError(r, parseErr)
 		w.WriteHeader(parseCode)
-		w.Write(common.GetErrorJson(parseErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(parseErr), env.logger)
 		return
 	}
 
@@ -96,7 +96,7 @@ func (env *Env) UpdateRequest(w http.ResponseWriter, r *http.Request) {
 	if tokenErr != nil {
 		env.logger.LogRequestError(r, tokenErr)
 		w.WriteHeader(tokenCode)
-		w.Write(common.GetErrorJson(tokenErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(tokenErr), env.logger)
 		return
 	}
 
@@ -105,7 +105,7 @@ func (env *Env) UpdateRequest(w http.ResponseWriter, r *http.Request) {
 		env.logger.LogRequestError(r, dbErr)
 		env.rollBackCache(update.Id, userId)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(common.GetErrorJson(dbErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(dbErr), env.logger)
 		return
 	}
 
@@ -114,7 +114,7 @@ func (env *Env) UpdateRequest(w http.ResponseWriter, r *http.Request) {
 		env.logger.LogRequestError(r, err)
 		env.rollBackCache(update.Id, userId)
 		w.WriteHeader(http.StatusNotFound)
-		w.Write(common.GetErrorJson(err))
+		common.WriteWithLogging(r, w, common.GetErrorJson(err), env.logger)
 		return
 	}
 
@@ -124,7 +124,7 @@ func (env *Env) UpdateRequest(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			env.logger.LogRequestError(r, err)
 			w.WriteHeader(code)
-			w.Write(common.GetErrorJson(err))
+			common.WriteWithLogging(r, w, common.GetErrorJson(err), env.logger)
 			return
 		}
 	case model.StatusDeclined:
@@ -132,13 +132,13 @@ func (env *Env) UpdateRequest(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			env.logger.LogRequestError(r, err)
 			w.WriteHeader(code)
-			w.Write(common.GetErrorJson(err))
+			common.WriteWithLogging(r, w, common.GetErrorJson(err), env.logger)
 			return
 		}
 	}
 
 	env.logger.LogRequestSuccess(r)
-	w.Write(common.GetEmptyJson())
+	common.WriteWithLogging(r, w, common.GetEmptyJson(), env.logger)
 }
 
 func (env *Env) GetNewRequestsEvents(w http.ResponseWriter, r *http.Request) {
@@ -147,7 +147,7 @@ func (env *Env) GetNewRequestsEvents(w http.ResponseWriter, r *http.Request) {
 	if tokenErr != nil {
 		env.logger.LogRequestError(r, tokenErr)
 		w.WriteHeader(tokenCode)
-		w.Write(common.GetErrorJson(tokenErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(tokenErr), env.logger)
 		return
 	}
 
@@ -155,14 +155,14 @@ func (env *Env) GetNewRequestsEvents(w http.ResponseWriter, r *http.Request) {
 	if boxErr != nil {
 		env.logger.LogRequestError(r, boxErr)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(common.GetErrorJson(boxErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(boxErr), env.logger)
 		return
 	}
 
 	var newRequestData = box.GetAll(env.conf.Logic.PollSeconds)
 
 	env.logger.LogRequestSuccess(r)
-	w.Write(common.GetDataJson(newRequestData))
+	common.WriteWithLogging(r, w, common.GetDataJson(newRequestData), env.logger)
 }
 
 func (env *Env) getRequestsTemplate(
@@ -175,19 +175,19 @@ func (env *Env) getRequestsTemplate(
 	if tokenErr != nil {
 		env.logger.LogRequestError(r, tokenErr)
 		w.WriteHeader(tokenCode)
-		w.Write(common.GetErrorJson(tokenErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(tokenErr), env.logger)
 		return
 	}
 	var requests, requestsErr = daoFunc(userId, env.meetRequestDAO)
 	if requestsErr != nil {
 		env.logger.LogRequestError(r, requestsErr)
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(common.GetErrorJson(requestsErr))
+		common.WriteWithLogging(r, w, common.GetErrorJson(requestsErr), env.logger)
 		return
 	}
 
 	env.logger.LogRequestSuccess(r)
-	w.Write(common.GetDataJson(requests))
+	common.WriteWithLogging(r, w, common.GetDataJson(requests), env.logger)
 }
 
 func (env *Env) rollBackCache(requestId int, userId int) {
