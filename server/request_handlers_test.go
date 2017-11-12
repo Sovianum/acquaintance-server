@@ -350,31 +350,31 @@ func TestEnv_UpdateRequest_AcceptSuccess(t *testing.T) {
 	assert.Equal(t, http.StatusOK, rec.Code)
 }
 
-func TestEnv_UpdateRequest_AcceptNotFound(t *testing.T) {
-	var env = &Env{
-		conf:             getTotalConf(),
-		meetRequestDAO:   &mocks.MeetRequestDAOMockGetRequestByIdNotFound{},
-		meetRequestCache: cache.New(time.Second*defaultExpiration, time.Second*defaultCleanup),
-		logger:           mylog.NewLogger(ioutil.Discard),
-	}
-	var tokenStr, _ = env.generateTokenString(mocks.RequestedId, "login")
-
-	var update = model.MeetRequestUpdate{Id: mocks.RequestedId, Status: model.StatusAccepted}
-	var requestMsg, err = json.Marshal(update)
-	assert.Nil(t, err)
-
-	var rec, recErr = getRecorder(
-		urlSample,
-		http.MethodPost,
-		env.UpdateRequest,
-		strings.NewReader(string(requestMsg)),
-		headerPair{"Content-Type", "application/json"},
-		headerPair{authorizationStr, fmt.Sprintf("Bearer %s", tokenStr)},
-	)
-
-	assert.Nil(t, recErr)
-	assert.Equal(t, http.StatusNotFound, rec.Code)
-}
+//func TestEnv_UpdateRequest_AcceptNotFound(t *testing.T) {
+//	var env = &Env{
+//		conf:             getTotalConf(),
+//		meetRequestDAO:   &mocks.MeetRequestDAOMockGetRequestByIdNotFound{},
+//		meetRequestCache: cache.New(time.Second*defaultExpiration, time.Second*defaultCleanup),
+//		logger:           mylog.NewLogger(ioutil.Discard),
+//	}
+//	var tokenStr, _ = env.generateTokenString(mocks.RequestedId, "login")
+//
+//	var update = model.MeetRequestUpdate{Id: mocks.RequestedId, Status: model.StatusAccepted}
+//	var requestMsg, err = json.Marshal(update)
+//	assert.Nil(t, err)
+//
+//	var rec, recErr = getRecorder(
+//		urlSample,
+//		http.MethodPost,
+//		env.UpdateRequest,
+//		strings.NewReader(string(requestMsg)),
+//		headerPair{"Content-Type", "application/json"},
+//		headerPair{authorizationStr, fmt.Sprintf("Bearer %s", tokenStr)},
+//	)
+//
+//	assert.Nil(t, recErr)
+//	assert.Equal(t, http.StatusNotFound, rec.Code)
+//}
 
 func TestEnv_UpdateRequest_AcceptLocked(t *testing.T) {
 	var env = &Env{

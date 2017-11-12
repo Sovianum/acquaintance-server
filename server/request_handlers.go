@@ -100,6 +100,21 @@ func (env *Env) UpdateRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var dbRequest, err = env.meetRequestDAO.GetRequestById(update.Id)
+	if err != nil {
+		env.logger.LogRequestError(r, err)
+		w.WriteHeader(http.StatusInternalServerError)
+		common.WriteWithLogging(r, w, common.GetErrorJson(err), env.logger)
+		return
+	}
+
+	if dbRequest.Status != model.StatusPending {
+		var err = fmt.Errorf("trying to update request with status \"%s\"", dbRequest.Status)
+		env.logger.LogRequestError(r, err)
+		common.WriteWithLogging(r, w, common.GetErrorJson(err), env.logger)
+		return
+	}
+
 	var rowsAffected, dbErr = env.meetRequestDAO.UpdateRequest(update.Id, userId, update.Status)
 	if dbErr != nil {
 		env.logger.LogRequestError(r, dbErr)
@@ -137,16 +152,9 @@ func (env *Env) UpdateRequest(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	var updatedRequest, err = env.meetRequestDAO.GetRequestById(update.Id)
-	if err != nil {
-		env.logger.LogRequestError(r, err)
-		w.WriteHeader(http.StatusInternalServerError)
-		common.WriteWithLogging(r, w, common.GetErrorJson(err), env.logger)
-		return
-	}
-
+	dbRequest.Status = update.Status
 	env.logger.LogRequestSuccess(r)
-	common.WriteWithLogging(r, w, common.GetDataJson(updatedRequest), env.logger)
+	common.WriteWithLogging(r, w, common.GetDataJson(dbRequest), env.logger)
 }
 
 func (env *Env) GetNewRequestsEvents(w http.ResponseWriter, r *http.Request) {
