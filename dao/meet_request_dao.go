@@ -2,8 +2,8 @@ package dao
 
 import (
 	"database/sql"
-	"github.com/Sovianum/acquaintance-server/model"
 	"fmt"
+	"github.com/Sovianum/acquaintance-server/model"
 )
 
 const (
@@ -51,7 +51,11 @@ const (
 		UPDATE MeetRequest SET status = $1 WHERE id = $2 AND requestedId = $3
 	`
 	getRequestById = `
-		SELECT id, requesterId, requestedId, status, time FROM MeetRequest WHERE id = $1
+		SELECT mr.id, mr.requesterId, u1.login, u1.about, mr.requestedId, u2.login, mr.status, mr.time FROM
+		MeetRequest mr
+		JOIN Users u1 ON mr.requesterId = u1.id
+		JOIN Users u2 ON mr.requestedId = u2.id
+		WHERE mr.id = $1
 	`
 	getLasRequestId = `
 		SELECT max(id) FROM MeetRequest
@@ -65,7 +69,6 @@ const (
 	ImpossibleID = -1 - iota
 	RequestExists
 	UserInaccessible
-
 )
 
 func IsInvalidId(id int) bool {
@@ -105,7 +108,17 @@ func NewMeetDAO(db *sql.DB) MeetRequestDAO {
 
 func (dao *meetRequestDAO) GetRequestById(id int) (*model.MeetRequest, error) {
 	var r = new(model.MeetRequest)
-	var err = dao.db.QueryRow(getRequestById, id).Scan(&r.Id, &r.RequesterId, &r.RequestedId, &r.Status, &r.Time)
+	var err = dao.db.QueryRow(getRequestById, id).
+		Scan(
+			&r.Id,
+			&r.RequesterId,
+			&r.RequesterLogin,
+			&r.RequesterAbout,
+			&r.RequestedId,
+			&r.RequestedLogin,
+			&r.Status,
+			&r.Time,
+		)
 	if err != nil {
 		return nil, err
 	}

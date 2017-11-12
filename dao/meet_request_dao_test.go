@@ -25,16 +25,28 @@ func TestMeetRequestDAO_GetRequestById_Success(t *testing.T) {
 		ExpectQuery("SELECT").
 		WithArgs(1).
 		WillReturnRows(
-			sqlmock.NewRows([]string{"id", "requesterId", "requestedId", "status", "time"}).
-				AddRow(1, 2, 3, model.StatusPending, date),
+			sqlmock.NewRows([]string{
+				"id",
+				"requesterId",
+				"requesterLogin",
+				"requesterAbout",
+				"requestedId",
+				"requestedLogin",
+				"status",
+				"time",
+			}).
+				AddRow(1, 2, "requesterLogin", "requesterAbout", 3, "requestedLogin", model.StatusPending, date),
 		)
 
 	var request = &model.MeetRequest{
-		Id:          1,
-		RequesterId: 2,
-		RequestedId: 3,
-		Time:        model.QuotedTime(date),
-		Status:      model.StatusPending,
+		Id:             1,
+		RequesterId:    2,
+		RequesterLogin: "requesterLogin",
+		RequesterAbout: "requesterAbout",
+		RequestedId:    3,
+		RequestedLogin: "requestedLogin",
+		Time:           model.QuotedTime(date),
+		Status:         model.StatusPending,
 	}
 
 	var meetRequestDAO = NewMeetDAO(db)
@@ -82,19 +94,19 @@ func TestMeetRequestDAO_GetRequests_Success(t *testing.T) {
 			sqlmock.NewRows([]string{
 				"id", "requesterId", "requesterLogin", "requesterAbout",
 				"requestedId", "requestedLogin", "status", "time",
-				}).
+			}).
 				AddRow(1, 2, "r_login", "r_about", 3, "d_login", model.StatusPending, date),
 		)
 
 	var request = &model.MeetRequest{
-		Id:          1,
-		RequesterId: 2,
+		Id:             1,
+		RequesterId:    2,
 		RequesterLogin: "r_login",
 		RequesterAbout: "r_about",
-		RequestedId: 3,
+		RequestedId:    3,
 		RequestedLogin: "d_login",
-		Time:        model.QuotedTime(date),
-		Status:      model.StatusPending,
+		Time:           model.QuotedTime(date),
+		Status:         model.StatusPending,
 	}
 
 	var meetRequestDAO = NewMeetDAO(db)
