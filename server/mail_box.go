@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/Sovianum/acquaintance-server/model"
+	"github.com/Sovianum/acquaintance-server/mylog"
 	"github.com/go-errors/errors"
 	"sync"
 	"time"
@@ -13,8 +14,9 @@ const (
 
 type requestMapType map[int]*model.MeetRequest
 
-func NewMailBox() MailBox {
+func NewMailBox(logger *mylog.Logger) MailBox {
 	return &mailBox{
+		logger:       logger,
 		syncChan:     make(chan int, 1),
 		accepted:     false,
 		requestsLock: sync.RWMutex{},
@@ -32,6 +34,7 @@ type MailBox interface {
 }
 
 type mailBox struct {
+	logger       *mylog.Logger
 	syncChan     chan int
 	accepted     bool
 	acceptedLock sync.RWMutex
@@ -58,7 +61,9 @@ func (box *mailBox) AddAccept(request *model.MeetRequest) error {
 
 	select {
 	case box.syncChan <- 1:
+		box.logger.Infof("pushed to sync chan of box")
 	default:
+		box.logger.Infof("sync chan of box already full")
 	}
 
 	return nil

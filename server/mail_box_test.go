@@ -2,12 +2,14 @@ package server
 
 import (
 	"github.com/Sovianum/acquaintance-server/model"
+	"github.com/Sovianum/acquaintance-server/mylog"
 	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"testing"
 )
 
 func TestMailBox_AddAccept(t *testing.T) {
-	var box = NewMailBox()
+	var box = NewMailBox(mylog.NewLogger(ioutil.Discard))
 	var request = new(model.MeetRequest)
 
 	var err1 = box.AddAccept(request)
@@ -18,7 +20,7 @@ func TestMailBox_AddAccept(t *testing.T) {
 }
 
 func TestMailBox_AddDecline(t *testing.T) {
-	var box = NewMailBox()
+	var box = NewMailBox(mylog.NewLogger(ioutil.Discard))
 	var request = new(model.MeetRequest)
 
 	box.AddDecline(request)
@@ -28,7 +30,7 @@ func TestMailBox_AddDecline(t *testing.T) {
 }
 
 func TestMailBox_GetAll(t *testing.T) {
-	var box = NewMailBox()
+	var box = NewMailBox(mylog.NewLogger(ioutil.Discard))
 	var request = new(model.MeetRequest)
 
 	box.AddDecline(request)

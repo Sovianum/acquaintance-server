@@ -217,12 +217,21 @@ func (env *Env) rollBackCache(requestId int, userId int) {
 
 func (env *Env) handleRequestAccept(requestId int, userId int) (int, error) {
 	var boxFunc = func(box MailBox, request *model.MeetRequest) (int, error) {
+		env.logger.Logger.Infof("add accepted request to mail box")
 		if err := box.AddAccept(request); err != nil {
 			return http.StatusUnavailableForLegalReasons, errors.New(alreadyAccepted)
 		}
 		return http.StatusOK, nil
 	}
-	var rightsCheckFunc = func(request *model.MeetRequest, userId int) bool { return request.RequestedId == userId }
+	var rightsCheckFunc = func(request *model.MeetRequest, userId int) bool {
+		env.logger.Logger.Infof(
+			"check accept request to add to mailbox: requested_id (%d) == userId (%d): %v",
+			request.RequestedId,
+			userId,
+			request.RequestedId == userId,
+		)
+		return request.RequestedId == userId
+	}
 	var boxExtractFunc = func(request *model.MeetRequest) (MailBox, error) {
 		return env.getMailBox(request.RequesterId)
 	}
@@ -231,10 +240,19 @@ func (env *Env) handleRequestAccept(requestId int, userId int) (int, error) {
 
 func (env *Env) handleRequestDecline(requestId int, userId int) (int, error) {
 	var boxFunc = func(box MailBox, request *model.MeetRequest) (int, error) {
+		env.logger.Logger.Infof("add declined request to mail box")
 		box.AddDecline(request)
 		return http.StatusOK, nil
 	}
-	var rightsCheckFunc = func(request *model.MeetRequest, userId int) bool { return request.RequestedId == userId }
+	var rightsCheckFunc = func(request *model.MeetRequest, userId int) bool {
+		env.logger.Logger.Infof(
+			"check decline request to add to mailbox: requested_id (%d) == userId (%d): %v",
+			request.RequestedId,
+			userId,
+			request.RequestedId == userId,
+		)
+		return request.RequestedId == userId
+	}
 	var boxExtractFunc = func(request *model.MeetRequest) (MailBox, error) {
 		return env.getMailBox(request.RequesterId)
 	}
@@ -243,10 +261,17 @@ func (env *Env) handleRequestDecline(requestId int, userId int) (int, error) {
 
 func (env *Env) handleRequestPending(requestId int, userId int) (int, error) {
 	var boxFunc = func(box MailBox, request *model.MeetRequest) (int, error) {
+		env.logger.Logger.Infof("add pending request to mail box")
 		box.AddPending(request)
 		return http.StatusOK, nil
 	}
 	var rightsCheckFunc = func(request *model.MeetRequest, userId int) bool {
+		env.logger.Logger.Infof(
+			"check pending request to add to mailbox: requester_id (%d) == userId (%d): %v",
+			request.RequesterId,
+			userId,
+			request.RequesterId == userId,
+		)
 		return request.RequesterId == userId
 	}
 	var boxExtractFunc = func(request *model.MeetRequest) (MailBox, error) {
@@ -262,27 +287,36 @@ func (env *Env) dispatchRequest(
 	requestId int,
 	userId int,
 ) (int, error) {
+	env.logger.Logger.Infof("entered dispatchRequest")
+
 	var request, requestErr = env.meetRequestDAO.GetRequestById(requestId)
 	if requestErr != nil {
+		env.logger.Errorf("failed to extract request with id %d in dispatcher", requestId)
 		return http.StatusNotFound, requestErr
 	}
 
 	if !rightsCheckFunc(request, userId) {
+		env.logger.Errorf("request check failed")
 		return http.StatusNotFound, errors.New(requestNotFound)
 	}
 
 	var box, boxErr = boxExtractFunc(request)
 	if boxErr != nil {
+		env.logger.Logger.Errorf(
+			"mail box for request with %d => %d not found",
+			request.RequesterId,
+			request.RequesterId,
+		)
 		return http.StatusInternalServerError, boxErr
 	}
-
+	env.logger.Logger.Info("pending request successfully added to mailbox")
 	return boxFunc(box, request)
 }
 
 func (env *Env) getMailBox(id int) (MailBox, error) {
 	var box, found = env.meetRequestCache.Get(strconv.Itoa(id))
 	if !found {
-		box = NewMailBox()
+		box = NewMailBox(env.logger)
 		env.meetRequestCache.Set(strconv.Itoa(id), box, cache.DefaultExpiration)
 	}
 
