@@ -7,11 +7,11 @@ import (
 	"github.com/Sovianum/acquaintance-server/common"
 	"github.com/Sovianum/acquaintance-server/dao"
 	"github.com/Sovianum/acquaintance-server/model"
+	"github.com/Sovianum/acquaintance-server/mylog"
 	"github.com/patrickmn/go-cache"
 	"io/ioutil"
 	"net/http"
 	"strconv"
-	"github.com/Sovianum/acquaintance-server/mylog"
 )
 
 const (
@@ -137,8 +137,16 @@ func (env *Env) UpdateRequest(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	var updatedRequest, err = env.meetRequestDAO.GetRequestById(update.Id)
+	if err != nil {
+		env.logger.LogRequestError(r, err)
+		w.WriteHeader(http.StatusInternalServerError)
+		common.WriteWithLogging(r, w, common.GetErrorJson(err), env.logger)
+		return
+	}
+
 	env.logger.LogRequestSuccess(r)
-	common.WriteWithLogging(r, w, common.GetEmptyJson(), env.logger)
+	common.WriteWithLogging(r, w, common.GetDataJson(updatedRequest), env.logger)
 }
 
 func (env *Env) GetNewRequestsEvents(w http.ResponseWriter, r *http.Request) {
