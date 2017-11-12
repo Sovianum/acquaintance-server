@@ -79,14 +79,18 @@ func TestMeetRequestDAO_GetRequests_Success(t *testing.T) {
 		ExpectQuery("SELECT").
 		WithArgs(1).
 		WillReturnRows(
-			sqlmock.NewRows([]string{"id", "requesterId", "requesterLogin", "requestedId", "requestedLogin", "status", "time"}).
-				AddRow(1, 2, "r_login", 3, "d_login", model.StatusPending, date),
+			sqlmock.NewRows([]string{
+				"id", "requesterId", "requesterLogin", "requesterAbout",
+				"requestedId", "requestedLogin", "status", "time",
+				}).
+				AddRow(1, 2, "r_login", "r_about", 3, "d_login", model.StatusPending, date),
 		)
 
 	var request = &model.MeetRequest{
 		Id:          1,
 		RequesterId: 2,
 		RequesterLogin: "r_login",
+		RequesterAbout: "r_about",
 		RequestedId: 3,
 		RequestedLogin: "d_login",
 		Time:        model.QuotedTime(date),

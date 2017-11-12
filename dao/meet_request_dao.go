@@ -12,19 +12,19 @@ const (
 		WHERE requesterId = $1 AND requestedId = $2 AND status = 'PENDING'
 	`
 	getIncomePendingRequests = `
-		SELECT mr.id, mr.requesterId, u1.login, mr.requestedId, u2.login, mr.status, mr.time FROM MeetRequest mr
+		SELECT mr.id, mr.requesterId, u1.login, u1.about, mr.requestedId, u2.login, mr.status, mr.time FROM MeetRequest mr
 			JOIN Users u1 ON mr.requesterId = u1.id
 			JOIN Users u2 ON mr.requestedId = u2.id
 		WHERE mr.requestedId = $1 AND status = 'PENDING'
 	`
 	getOutcomePendingRequests = `
-		SELECT mr.id, mr.requesterId, u1.login, mr.requestedId, u2.login, mr.status, mr.time FROM MeetRequest mr
+		SELECT mr.id, mr.requesterId, u1.login, u1.about, mr.requestedId, u2.login, mr.status, mr.time FROM MeetRequest mr
 			JOIN Users u1 ON mr.requesterId = u1.id
 			JOIN Users u2 ON mr.requestedId = u2.id
 		WHERE mr.requesterId = $1 AND status = 'PENDING'
 	`
 	getAllRequests = `
-		SELECT mr.id, mr.requesterId, u1.login, mr.requestedId, u2.login, mr.status, mr.time FROM MeetRequest mr
+		SELECT mr.id, mr.requesterId, u1.login, u1.about, mr.requestedId, u2.login, mr.status, mr.time FROM MeetRequest mr
 			JOIN Users u1 ON mr.requesterId = u1.id
 			JOIN Users u2 ON mr.requestedId = u2.id
 		WHERE mr.requestedId = $1 OR mr.requesterId = $1
@@ -225,6 +225,7 @@ func (dao *meetRequestDAO) getRequestsTemplate(sql string, userId int) ([]*model
 			&request.Id,
 			&request.RequesterId,
 			&request.RequesterLogin,
+			&request.RequesterAbout,
 			&request.RequestedId,
 			&request.RequestedLogin,
 			&request.Status,

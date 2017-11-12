@@ -10,6 +10,7 @@ type MeetRequest struct {
 	Id             int        `json:"id"`
 	RequesterId    int        `json:"requester_id"`
 	RequesterLogin string     `json:"requester_login"`
+	RequesterAbout string     `json:"requester_about"`
 	RequestedId    int        `json:"requested_id"`
 	RequestedLogin string     `json:"requested_login"`
 	Time           QuotedTime `json:"time"`
