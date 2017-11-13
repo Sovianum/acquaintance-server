@@ -19,6 +19,6 @@
     "online_timeout": 500000000,
     "request_expiration": 500000000,
     "cleanup_interval": 100000,
-    "poll_seconds": 10
+    "poll_seconds": 1
   }
 }
