@@ -127,15 +127,15 @@ func (env *Env) UserSignInPost(w http.ResponseWriter, r *http.Request) {
 
 func (env *Env) UserGetSelfInfo(w http.ResponseWriter, r *http.Request) {
 	env.logger.LogRequestStart(r)
-	var user, code, parseErr = parseUser(r)
-	if parseErr != nil {
-		env.logger.LogRequestError(r, parseErr)
-		w.WriteHeader(code)
-		common.WriteWithLogging(r, w, common.GetErrorJson(parseErr), env.logger)
+	var userId, idCode, idErr = env.getIdFromRequest(r)
+	if idErr != nil {
+		env.logger.LogRequestError(r, idErr)
+		w.WriteHeader(idCode)
+		common.WriteWithLogging(r, w, common.GetErrorJson(idErr), env.logger)
 		return
 	}
 
-	var exists, existsErr = env.userDAO.ExistsByLogin(user.Login)
+	var exists, existsErr = env.userDAO.ExistsById(userId)
 	if existsErr != nil {
 		env.logger.LogRequestError(r, existsErr)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -150,7 +150,7 @@ func (env *Env) UserGetSelfInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var dbUser, dbErr = env.userDAO.GetUserByLogin(user.Login)
+	var dbUser, dbErr = env.userDAO.GetUserById(userId)
 	if dbErr != nil {
 		env.logger.LogRequestError(r, dbErr)
 		w.WriteHeader(http.StatusInternalServerError)
