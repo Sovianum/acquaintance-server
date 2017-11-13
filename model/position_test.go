@@ -16,7 +16,7 @@ func TestPosition_Unmarshal_ParseError(t *testing.T) {
 
 func TestPosition_Unmarshal_Success(t *testing.T) {
 	var pos = Position{}
-	var data = []byte("{\"user_id\": 100, \"time\": \"2006-01-02T15:04:05\", \"point\": {\"x\": 100, \"y\": 200}}")
+	var data = []byte("{\"user_id\": 100, \"time\": \"2006-01-02T15:04:05Z\", \"point\": {\"x\": 100, \"y\": 200}}")
 	var err = json.Unmarshal(data, &pos)
 
 	assert.Nil(t, err)
