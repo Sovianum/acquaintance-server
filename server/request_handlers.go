@@ -136,6 +136,7 @@ func (env *Env) UpdateRequest(w http.ResponseWriter, r *http.Request) {
 	switch update.Status {
 	case model.StatusAccepted:
 		var code, err = env.handleRequestAccept(update.Id, userId)
+		env.logger.Info("finish request accept")
 		if err != nil {
 			env.logger.LogRequestError(r, err)
 			w.WriteHeader(code)
@@ -144,6 +145,7 @@ func (env *Env) UpdateRequest(w http.ResponseWriter, r *http.Request) {
 		}
 	case model.StatusDeclined:
 		var code, err = env.handleRequestDecline(update.Id, userId)
+		env.logger.Info("finish request decline")
 		if err != nil {
 			env.logger.LogRequestError(r, err)
 			w.WriteHeader(code)
@@ -309,7 +311,6 @@ func (env *Env) dispatchRequest(
 		)
 		return http.StatusInternalServerError, boxErr
 	}
-	env.logger.Logger.Info("pending request successfully added to mailbox")
 	return boxFunc(box, request)
 }
 
