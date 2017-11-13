@@ -108,8 +108,14 @@ func (env *Env) UpdateRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if dbRequest.Status != model.StatusPending {
-		var err = fmt.Errorf("trying to update request with status \"%s\"", dbRequest.Status)
+	var validStatusCombination = dbRequest.Status == model.StatusPending && update.Status != model.StatusInterrupted
+	validStatusCombination = validStatusCombination || dbRequest.Status == model.StatusAccepted && update.Status == model.StatusInterrupted
+	if !validStatusCombination {
+		var err = fmt.Errorf(
+			"trying to update request with status \"%s\" to status \"%s\"",
+			dbRequest.Status,
+			update.Status,
+		)
 		env.logger.LogRequestError(r, err)
 		common.WriteWithLogging(r, w, common.GetErrorJson(err), env.logger)
 		return
@@ -133,19 +139,19 @@ func (env *Env) UpdateRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var handler func(int, int) (int, error) = nil
 	switch update.Status {
 	case model.StatusAccepted:
-		var code, err = env.handleRequestAccept(update.Id, userId)
-		env.logger.Info("finish request accept")
-		if err != nil {
-			env.logger.LogRequestError(r, err)
-			w.WriteHeader(code)
-			common.WriteWithLogging(r, w, common.GetErrorJson(err), env.logger)
-			return
-		}
+		handler = env.handleRequestAccept
 	case model.StatusDeclined:
-		var code, err = env.handleRequestDecline(update.Id, userId)
-		env.logger.Info("finish request decline")
+		handler = env.handleRequestDecline
+	case model.StatusInterrupted:
+		handler = env.handleRequestInterrupt
+	}
+
+	if handler != nil {
+		var code, err = handler(update.Id, userId)
+		env.logger.Infof("finish request update to status %s", update.Status)
 		if err != nil {
 			env.logger.LogRequestError(r, err)
 			w.WriteHeader(code)
@@ -234,7 +240,9 @@ func (env *Env) handleRequestAccept(requestId int, userId int) (int, error) {
 		)
 		return request.RequestedId == userId
 	}
-	var boxExtractFunc = func(request *model.MeetRequest) (MailBox, error) {
+	var boxExtractFunc = func(userId int, request *model.MeetRequest) (MailBox, error) {
+		// here we extract requester's mail box cos the one who initiated the requested should be
+		// informed about request accept
 		return env.getMailBox(request.RequesterId)
 	}
 	return env.dispatchRequest(boxFunc, boxExtractFunc, rightsCheckFunc, requestId, userId)
@@ -255,8 +263,45 @@ func (env *Env) handleRequestDecline(requestId int, userId int) (int, error) {
 		)
 		return request.RequestedId == userId
 	}
-	var boxExtractFunc = func(request *model.MeetRequest) (MailBox, error) {
+	var boxExtractFunc = func(userId int, request *model.MeetRequest) (MailBox, error) {
+		// here we extract requester's mail box cos the one who initiated the requested should be
+		// informed about request decline
 		return env.getMailBox(request.RequesterId)
+	}
+	return env.dispatchRequest(boxFunc, boxExtractFunc, rightsCheckFunc, requestId, userId)
+}
+
+func (env *Env) handleRequestInterrupt(requestId int, userId int) (int, error) {
+	var boxFunc = func(box MailBox, request *model.MeetRequest) (int, error) {
+		env.logger.Logger.Infof("interrupt request in mail box")
+		err := box.Interrupt(request)
+
+		if err != nil {
+			return http.StatusConflict, err
+		}
+		return http.StatusOK, nil
+	}
+	var rightsCheckFunc = func(request *model.MeetRequest, userId int) bool {
+		var hasRights = request.RequesterId == userId || request.RequestedId == userId
+		env.logger.Logger.Infof(
+			"check interrupt request to add to mailbox: "+
+				"userId (%d) is either requester_id (%d) or requested_id (%d): %v",
+			userId,
+			request.RequesterId,
+			request.RequestedId,
+			hasRights,
+		)
+		return hasRights
+	}
+	var boxExtractFunc = func(userId int, request *model.MeetRequest) (MailBox, error) {
+		var address int
+		if userId == request.RequesterId {
+			address = request.RequestedId
+		} else {
+			address = request.RequesterId
+		}
+		// here we extract mail box of the one who didn't interrupt the request
+		return env.getMailBox(address)
 	}
 	return env.dispatchRequest(boxFunc, boxExtractFunc, rightsCheckFunc, requestId, userId)
 }
@@ -276,7 +321,9 @@ func (env *Env) handleRequestPending(requestId int, userId int) (int, error) {
 		)
 		return request.RequesterId == userId
 	}
-	var boxExtractFunc = func(request *model.MeetRequest) (MailBox, error) {
+	var boxExtractFunc = func(userId int, request *model.MeetRequest) (MailBox, error) {
+		// here we extract requested's mail box cos the one whom the request was addressed should be
+		// informed about new request
 		return env.getMailBox(request.RequestedId)
 	}
 	return env.dispatchRequest(boxFunc, boxExtractFunc, rightsCheckFunc, requestId, userId)
@@ -284,7 +331,7 @@ func (env *Env) handleRequestPending(requestId int, userId int) (int, error) {
 
 func (env *Env) dispatchRequest(
 	boxFunc func(MailBox, *model.MeetRequest) (int, error),
-	boxExtractFunc func(request *model.MeetRequest) (MailBox, error),
+	boxExtractFunc func(userId int, request *model.MeetRequest) (MailBox, error),
 	rightsCheckFunc func(request *model.MeetRequest, userId int) bool,
 	requestId int,
 	userId int,
@@ -302,7 +349,7 @@ func (env *Env) dispatchRequest(
 		return http.StatusNotFound, errors.New(requestNotFound)
 	}
 
-	var box, boxErr = boxExtractFunc(request)
+	var box, boxErr = boxExtractFunc(userId, request)
 	if boxErr != nil {
 		env.logger.Logger.Errorf(
 			"mail box for request with %d => %d not found",

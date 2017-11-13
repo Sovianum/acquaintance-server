@@ -10,6 +10,7 @@ import (
 
 const (
 	userHasAlreadyAcceptedRequest = "user has already accepted request"
+	userHasNotAcceptedRequestYet  = "user has not accepted request yet"
 )
 
 type requestMapType map[int]*model.MeetRequest
@@ -29,6 +30,7 @@ type MailBox interface {
 	AddAccept(request *model.MeetRequest) error
 	AddDecline(request *model.MeetRequest)
 	AddPending(request *model.MeetRequest)
+	Interrupt(request *model.MeetRequest) error
 	Remove(requestId int)
 	GetAll(seconds int) []*model.MeetRequest
 }
@@ -75,6 +77,30 @@ func (box *mailBox) AddDecline(request *model.MeetRequest) {
 
 func (box *mailBox) AddPending(request *model.MeetRequest) {
 	box.addNonAccept(request, model.StatusPending)
+}
+
+func (box *mailBox) Interrupt(request *model.MeetRequest) error {
+	box.acceptedLock.Lock()
+	if !box.accepted {
+		return errors.New(userHasNotAcceptedRequestYet)
+	} else {
+		box.accepted = false
+	}
+	box.acceptedLock.Unlock()
+
+	box.requestsLock.Lock()
+	var requestCopy = new(model.MeetRequest)
+	*requestCopy = *request
+	requestCopy.Status = model.StatusInterrupted
+
+	box.requestMap[request.Id] = requestCopy
+	box.requestsLock.Unlock()
+
+	select {
+	case box.syncChan <- 1:
+	default:
+	}
+	return nil
 }
 
 func (box *mailBox) Remove(requestId int) {

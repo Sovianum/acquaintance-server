@@ -39,7 +39,11 @@ func (update *MeetRequestUpdate) UnmarshalJSON(data []byte) error {
 }
 
 func (update *MeetRequestUpdate) Validate() error {
-	if update.Status != StatusPending && update.Status != StatusAccepted && update.Status != StatusDeclined {
+	var fail = update.Status != StatusPending
+	fail = fail && update.Status != StatusAccepted
+	fail = fail && update.Status != StatusDeclined
+	fail = fail && update.Status != StatusInterrupted
+	if fail {
 		return fmt.Errorf("got invalid status %s", update.Status)
 	}
 	return nil

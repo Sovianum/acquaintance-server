@@ -1,9 +1,10 @@
 package model
 
 const (
-	StatusPending  = "PENDING"
-	StatusAccepted = "ACCEPTED"
-	StatusDeclined = "DECLINED"
+	StatusPending     = "PENDING"
+	StatusAccepted    = "ACCEPTED"
+	StatusDeclined    = "DECLINED"
+	StatusInterrupted = "INTERRUPTED"
 )
 
 type MeetRequest struct {
