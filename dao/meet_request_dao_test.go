@@ -32,10 +32,11 @@ func TestMeetRequestDAO_GetRequestById_Success(t *testing.T) {
 				"requesterAbout",
 				"requestedId",
 				"requestedLogin",
+				"requestedAbout",
 				"status",
 				"time",
 			}).
-				AddRow(1, 2, "requesterLogin", "requesterAbout", 3, "requestedLogin", model.StatusPending, date),
+				AddRow(1, 2, "requesterLogin", "requesterAbout", 3, "requestedLogin", "requestedAbout", model.StatusPending, date),
 		)
 
 	var request = &model.MeetRequest{
@@ -45,6 +46,7 @@ func TestMeetRequestDAO_GetRequestById_Success(t *testing.T) {
 		RequesterAbout: "requesterAbout",
 		RequestedId:    3,
 		RequestedLogin: "requestedLogin",
+		RequestedAbout: "requestedAbout",
 		Time:           model.QuotedTime(date),
 		Status:         model.StatusPending,
 	}
@@ -93,9 +95,9 @@ func TestMeetRequestDAO_GetRequests_Success(t *testing.T) {
 		WillReturnRows(
 			sqlmock.NewRows([]string{
 				"id", "requesterId", "requesterLogin", "requesterAbout",
-				"requestedId", "requestedLogin", "status", "time",
+				"requestedId", "requestedLogin", "requestedAbout", "status", "time",
 			}).
-				AddRow(1, 2, "r_login", "r_about", 3, "d_login", model.StatusPending, date),
+				AddRow(1, 2, "r_login", "r_about", 3, "d_login", "d_about", model.StatusPending, date),
 		)
 
 	var request = &model.MeetRequest{
@@ -105,6 +107,7 @@ func TestMeetRequestDAO_GetRequests_Success(t *testing.T) {
 		RequesterAbout: "r_about",
 		RequestedId:    3,
 		RequestedLogin: "d_login",
+		RequestedAbout: "d_about",
 		Time:           model.QuotedTime(date),
 		Status:         model.StatusPending,
 	}

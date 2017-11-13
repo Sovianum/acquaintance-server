@@ -12,19 +12,19 @@ const (
 		WHERE requesterId = $1 AND requestedId = $2 AND status = 'PENDING'
 	`
 	getIncomePendingRequests = `
-		SELECT mr.id, mr.requesterId, u1.login, u1.about, mr.requestedId, u2.login, mr.status, mr.time FROM MeetRequest mr
+		SELECT mr.id, mr.requesterId, u1.login, u1.about, mr.requestedId, u2.login, u2.about, mr.status, mr.time FROM MeetRequest mr
 			JOIN Users u1 ON mr.requesterId = u1.id
 			JOIN Users u2 ON mr.requestedId = u2.id
 		WHERE mr.requestedId = $1 AND status = 'PENDING'
 	`
 	getOutcomePendingRequests = `
-		SELECT mr.id, mr.requesterId, u1.login, u1.about, mr.requestedId, u2.login, mr.status, mr.time FROM MeetRequest mr
+		SELECT mr.id, mr.requesterId, u1.login, u1.about, mr.requestedId, u2.login, u2.about, mr.status, mr.time FROM MeetRequest mr
 			JOIN Users u1 ON mr.requesterId = u1.id
 			JOIN Users u2 ON mr.requestedId = u2.id
 		WHERE mr.requesterId = $1 AND status = 'PENDING'
 	`
 	getAllRequests = `
-		SELECT mr.id, mr.requesterId, u1.login, u1.about, mr.requestedId, u2.login, mr.status, mr.time FROM MeetRequest mr
+		SELECT mr.id, mr.requesterId, u1.login, u1.about, mr.requestedId, u2.login, u2.about, mr.status, mr.time FROM MeetRequest mr
 			JOIN Users u1 ON mr.requesterId = u1.id
 			JOIN Users u2 ON mr.requestedId = u2.id
 		WHERE mr.requestedId = $1 OR mr.requesterId = $1
@@ -51,7 +51,7 @@ const (
 		UPDATE MeetRequest SET status = $1 WHERE id = $2 AND requestedId = $3
 	`
 	getRequestById = `
-		SELECT mr.id, mr.requesterId, u1.login, u1.about, mr.requestedId, u2.login, mr.status, mr.time FROM
+		SELECT mr.id, mr.requesterId, u1.login, u1.about, mr.requestedId, u2.login, u2.about, mr.status, mr.time FROM
 		MeetRequest mr
 		JOIN Users u1 ON mr.requesterId = u1.id
 		JOIN Users u2 ON mr.requestedId = u2.id
@@ -116,6 +116,7 @@ func (dao *meetRequestDAO) GetRequestById(id int) (*model.MeetRequest, error) {
 			&r.RequesterAbout,
 			&r.RequestedId,
 			&r.RequestedLogin,
+			&r.RequestedAbout,
 			&r.Status,
 			&r.Time,
 		)
@@ -241,6 +242,7 @@ func (dao *meetRequestDAO) getRequestsTemplate(sql string, userId int) ([]*model
 			&request.RequesterAbout,
 			&request.RequestedId,
 			&request.RequestedLogin,
+			&request.RequestedAbout,
 			&request.Status,
 			&request.Time,
 		)
