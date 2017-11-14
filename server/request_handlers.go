@@ -47,9 +47,9 @@ func (env *Env) CreateRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if dao.IsInvalidId(requestId) {
-		env.logger.LogRequestError(r, dao.GetLogicalError(requestId))
-		w.WriteHeader(http.StatusForbidden)
-		common.WriteWithLogging(r, w, common.GetErrorJson(dao.GetLogicalError(requestId)), env.logger)
+		env.logger.LogRequestError(r, requestCreationError(requestId))
+		w.WriteHeader(requestCreationCode(requestId))
+		common.WriteWithLogging(r, w, common.GetErrorJson(requestCreationError(requestId)), env.logger)
 		return
 	}
 	var code, err = env.handleRequestPending(requestId, userId)
@@ -412,4 +412,26 @@ func parseRequest(r *http.Request, logger *mylog.Logger) (*model.MeetRequest, in
 	}
 
 	return request, http.StatusOK, nil
+}
+
+func requestCreationError(code int) error {
+	switch code {
+	case dao.RequestExists:
+		return fmt.Errorf("request already exists")
+	case dao.UserInaccessible:
+		return fmt.Errorf("user inaccessible")
+	default:
+		return fmt.Errorf("unknown error with code %d", code)
+	}
+}
+
+func requestCreationCode(code int) int {
+	switch code {
+	case dao.RequestExists:
+		return http.StatusConflict
+	case dao.UserInaccessible:
+		return http.StatusFailedDependency
+	default:
+		return http.StatusForbidden
+	}
 }

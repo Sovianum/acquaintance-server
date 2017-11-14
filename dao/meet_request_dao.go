@@ -2,7 +2,6 @@ package dao
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/Sovianum/acquaintance-server/model"
 )
 
@@ -73,17 +72,6 @@ const (
 
 func IsInvalidId(id int) bool {
 	return id < 0
-}
-
-func GetLogicalError(code int) error {
-	switch code {
-	case RequestExists:
-		return fmt.Errorf("request already exists")
-	case UserInaccessible:
-		return fmt.Errorf("user inaccessible")
-	default:
-		return fmt.Errorf("unknown error with code %d", code)
-	}
 }
 
 type MeetRequestDAO interface {
