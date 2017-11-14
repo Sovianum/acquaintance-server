@@ -296,8 +296,10 @@ func (env *Env) handleRequestInterrupt(requestId int, userId int) (int, error) {
 	var boxExtractFunc = func(userId int, request *model.MeetRequest) (MailBox, error) {
 		var address int
 		if userId == request.RequesterId {
+			env.logger.Infof("chosen requested with id = %d", request.RequestedId)
 			address = request.RequestedId
 		} else {
+			env.logger.Infof("chosen requester with id = %d", request.RequesterId)
 			address = request.RequesterId
 		}
 		// here we extract mail box of the one who didn't interrupt the request
